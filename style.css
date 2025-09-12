@@ -23,7 +23,7 @@
 body {
     background-color: var(--bg-dark);
     background-image: radial-gradient(circle at 10% 20%, rgba(155, 89, 182, 0.15) 0%, transparent 50%),
-        radial-gradient(circle at 80% 90%, rgba(52, 152, 219, 0.1) 0%, transparent 40%);
+        radial-gradient(circle at 80% 90%, rgba(254, 255, 255, 0.1) 0%, transparent 40%);
     color: var(--text-primary);
     font-family: var(--font-family);
     -webkit-font-smoothing: antialiased;
@@ -60,14 +60,9 @@ body {
     transition: all 0.3s ease;
 }
 
-/* --- Login Page Centering Fix --- */
-#login-wrapper {
-    display: none;
-}
 
-#login-wrapper.active {
-    display: block;
-}
+
+
 
 #login-view {
     min-height: 100vh;
@@ -77,7 +72,7 @@ body {
     padding: 20px;
 }
 
-/* Replace With This Block */
+
 .login-container {
     max-width: 420px;
     width: 100%;
@@ -109,12 +104,11 @@ body {
     width: 100%;
 }
 
-/* This makes the input field a dark, bordered box */
 .login-container .input-group input {
     width: 100%;
     padding: 14px;
     background-color: rgba(13, 9, 21, 0.9);
-    /* Darker background */
+
     border: 1px solid var(--border-color);
     border-radius: 8px;
     color: var(--text-primary);
@@ -133,21 +127,21 @@ body {
     box-shadow: 0 0 10px var(--glow-purple);
 }
 
-/* This restyles the button to be light grey with dark text */
+
 .login-container .btn-primary {
     width: 100%;
     padding: 14px;
     
     background-color: #f0f0f0;
-    /* Light grey background */
+
     color: #1a1a1a;
-    /* Dark text */
+
     box-shadow: none;
 }
 
 .login-container .btn-primary:hover {
     background-color: #ffffff;
-    /* Brighter white on hover */
+ 
     box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
 }
 
@@ -166,7 +160,14 @@ body {
     color: var(--primary-purple);
 }
 
-/* --- Navbar & Dropdown Fix --- */
+
+.input-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+
 .navbar {
     display: flex;
     justify-content: space-between;
@@ -242,7 +243,7 @@ body {
 
 .dropdown-menu {
     position: fixed;
-    /* FIX: Changed from absolute to fixed */
+   
     top: 70px;
     right: 30px;
     width: 250px;
@@ -379,7 +380,7 @@ input:checked+.slider:before {
     color: var(--text-secondary);
 }
 
-/* --- General Layout & Back Button Fix --- */
+
 .container {
     max-width: 900px;
     margin: 40px auto;
@@ -394,7 +395,7 @@ input:checked+.slider:before {
 }
 
 .back-btn {
-    /* FIX: New dedicated style for back button */
+  
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -416,9 +417,7 @@ input:checked+.slider:before {
     border-color: var(--primary-purple);
 }
 
-/* --- Glowing Effects & Prettier UI --- */
-/* Replace With This Corrected Block */
-/* --- Replace With This Corrected Block --- */
+
 @keyframes glow-pulse { 
     0%, 100% { box-shadow: 0 0 15px var(--glow-purple); } 
     50% { box-shadow: 0 0 25px var(--glow-purple); } 
@@ -435,29 +434,29 @@ input:checked+.slider:before {
     margin-bottom: 15px; 
 }
 
-/* This is the new, targeted style for the Fetch button */
+
 #fetch-messages-btn {
-    background-color: var(--primary-purple)   ;  /* Light grey background */
-    color: #ffffff;                /* Dark text */
-    border-radius: 50px;          /* Fully rounded corners (pill shape) */
-    padding: 12px 25px;           /* Better proportions */
+    background-color: var(--primary-purple)   ; 
+    color: #ffffff;                
+    border-radius: 50px;        
+    padding: 12px 25px;          
     font-weight: 600;
-    box-shadow: 0 2px 5px rgba(255, 255, 255, 0.1); /* Subtle shadow for depth */
+    box-shadow: 0 2px 5px rgba(255, 255, 255, 0.1); 
     transition: all 0.2s ease;
-    animation: none;              /* Remove the purple glow animation */
+    animation: none;             
 }
 
-/* This makes the icon inside the button dark */
+
 #fetch-messages-btn .feather {
     stroke: #1a1a1a;
 }
 
-/* This adds a new, subtle hover effect */
+
 #fetch-messages-btn:hover {
-    background-color: #ffffff; /* Brighter on hover */
+    background-color: #ffffff; 
     transform: translateY(-2px);
     box-shadow: 0 4px 15px rgba(0,0,0,0.1), 0 0 20px rgba(255, 255, 255, 0.5); 
-    color :rgba(0, 0, 0, 0);/* Subtle white glow on hover */
+    color :rgba(0, 0, 0, 0);
 }
 
 .action-section {
@@ -473,18 +472,18 @@ input:checked+.slider:before {
     margin-bottom: 15px;
 }
 
-/* Replace With This Rule */
+
 .action-section .btn-secondary {
     animation: glow-pulse 2.5s infinite;
     transition: all 0.3s ease;
-    /* Add transition for smooth hover */
+ 
 }
 
 .action-section .btn-secondary:hover {
     transform: translateY(-2px) scale(1.03);
-    /* Lift and grow slightly */
+   
     box-shadow: 0 0 25px var(--glow-purple);
-    /* Enhance glow on hover */
+
 }
 
 .message-card:hover,
@@ -678,7 +677,7 @@ input:checked+.slider:before {
     transform: translateY(-2px);
 }
 
-/* FIX: Added lift effect */
+
 .btn-edit {
     background-color: #34495e;
 }
@@ -732,7 +731,7 @@ input:checked+.slider:before {
     cursor: pointer;
 }
 
-/* --- Settings & Privacy Pages --- */
+
 .settings-section,
 .privacy-content {
     padding: 25px;
@@ -768,7 +767,7 @@ input:checked+.slider:before {
     margin-bottom: 15px;
 }
 
-/* --- History Page --- */
+
 .history-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
@@ -832,4 +831,206 @@ input:checked+.slider:before {
 .confidence-percent {
     font-weight: 600;
     font-size: 14px;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  
+ 
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background 0.5s ease;
+}
+
+.btn-secondary {
+  background: rgba(83, 10, 77, 0.15);
+  color: white;
+}
+
+.btn-secondary:hover {
+  background: rgba(49, 45, 45, 0.25);
+}
+
+.btn-primary {
+  background: #9747ae;
+  color: white;
+}
+
+.btn-primary:hover {
+  background: #ffffff;
+  color:#2980b9
+}
+
+.view {
+  display: none;
+}
+.view.active {
+  display: block;
+}
+
+
+
+#intro-wrapper,
+#signup-wrapper,
+#login-wrapper,
+#telegram-connect-wrapper, 
+#pin-code-wrapper  {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 10;
+    
+  
+    display: none; 
+    justify-content: center;
+    align-items: center;
+    
+    background: linear-gradient(to bottom right, #1e1e2f, #421346);
+}
+
+
+#intro-wrapper.active,
+#signup-wrapper.active,
+#login-wrapper.active,
+#telegram-connect-wrapper.active,
+#pin-code-wrapper.active {
+    display: flex; 
+}
+
+
+.intro-container {
+    text-align: center;
+    padding: 40px;
+    max-width: 500px;
+    background-color: var(--bg-dark);
+    background-image: radial-gradient(circle at 10% 20%, rgba(155, 89, 182, 0.15) 0%, transparent 50%), radial-gradient(circle at 80% 90%, rgba(254, 255, 255, 0.1) 0%, transparent 40%);
+    border-radius: 16px;
+    backdrop-filter: blur(12px);
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.4);
+    color: rgb(243, 243, 243);
+}
+
+.intro-container .logo {
+    margin-bottom: 20px;
+}
+
+.intro-container h1 {
+    font-size: 2rem;
+    margin-bottom: 10px;
+}
+
+.intro-container p {
+    font-size: 1.1rem;
+    margin-bottom: 30px;
+}
+
+#get-started-btn {
+    padding: 12px 24px;
+    font-size: 1rem;
+    border-radius: 8px;
+    margin: 0 auto;
+    display: block;
+}
+
+
+
+
+.agent-container {
+    text-align: center;
+    padding: 60px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+}
+
+.agent-container p {
+    color: var(--text-secondary);
+    font-size: 1.1rem;
+    max-width: 400px;
+}
+
+.btn-large {
+    padding: 15px 30px;
+    font-size: 1.2rem;
+    font-weight: 600;
+    border-radius: 50px;
+}
+
+.agent-buttons {
+    display: flex;
+    gap: 20px;
+    margin-top: 10px;
+}
+
+
+.action-section .action-buttons {
+    display: flex;
+    gap: 15px; 
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+
+.action-section .btn {
+    background: rgba(26, 19, 44, 0.4); 
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+    padding: 12px 24px;
+    font-size: 15px;
+    font-weight: 600;
+    border-radius: 50px; 
+    backdrop-filter: blur(5px);
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+}
+
+
+.action-section .btn i {
+    width: 20px;
+    height: 20px;
+}
+
+
+.action-section .btn:hover {
+    transform: translateY(-3px); 
+    color: var(--text-primary);
+    border-color: var(--primary-purple);
+}
+
+
+.action-section .btn-secondary:hover {
+    box-shadow: 0 0 20px var(--glow-purple); 
+}
+
+
+.action-section .btn-primary {
+    background: var(--primary-purple);
+    color: white;
+    border-color: var(--primary-purple);
+    
+    animation: glow-pulse 2.5s infinite;
+}
+
+
+.action-section .btn-primary:hover {
+    box-shadow: 0 0 25px var(--glow-purple);
+}
+@keyframes glow-pulse { 
+    0%, 100% { box-shadow: 0 0 15px var(--glow-purple); } 
+    50% { box-shadow: 0 0 25px var(--glow-purple); } 
 }

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,26 +8,97 @@
     <link rel="stylesheet" href="style.css">
     <script src="https://unpkg.com/feather-icons"></script>
 </head>
+
 <body>
+
+    <!-- ======================= -->
+    <!--     INTRO WRAPPER       -->
+    <!-- ======================= -->
+    <div id="intro-wrapper" class="view active">
+        <div class="intro-container glass-card">
+            <img src="assets/autotuna-logo.png" alt="Autotuna Logo" class="logo" style="width: 120px; height: auto;">
+            <h1>Meet Autotuna</h1>
+            <p>Your intelligent Telegram assistant for smarter conversations, automated replies, and AI-powered
+                insights.</p>
+            <button id="get-started-btn" class="btn btn-primary">Get Started</button>
+        </div>
+    </div>
+
+    <!-- ======================= -->
+    <!--     SIGN UP WRAPPER     -->
+    <!-- ======================= -->
+    <div id="signup-wrapper" class="view">
+        <div class="login-container glass-card">
+            <img src="assets/autotuna-logo.png" alt="Autotuna Logo" class="logo" style="width: 120px; height: auto;">
+            <h1>Create an Account</h1>
+            <p>Join Autotuna to automate your workflow.</p>
+            <form id="signup-form">
+                <div class="input-group"><input type="text" placeholder="Username" required></div>
+                <div class="input-grid">
+                    <div class="input-group"><input type="text" placeholder="First Name" required></div>
+                    <div class="input-group"><input type="text" placeholder="Last Name" required></div>
+                </div>
+                <div class="input-group"><input type="email" placeholder="Email" required></div>
+                <button type="button" id="signup-next-btn" class="btn btn-primary">Next</button>
+            </form>
+            <div class="login-footer">
+                <a href="#" id="go-to-login-link">Already have an account? Login</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================================== -->
+    <!--  SIGN UP (STEP 2) - TELEGRAM CONNECT -->
+    <!-- ================================== -->
+    <div id="telegram-connect-wrapper" class="view">
+        <div class="login-container glass-card">
+            <img src="assets/autotuna-logo.png" alt="Autotuna Logo" class="logo" style="width: 120px; height: auto;">
+            <h1>Connect Your Account</h1>
+            <p>Enter your Telegram developer credentials.</p>
+            <form id="telegram-connect-form">
+                <div class="input-group"><input type="text" placeholder="Telegram API ID" required></div>
+                <div class="input-group"><input type="text" placeholder="Telegram API Hash" required></div>
+                <div class="input-group"><input type="tel" placeholder="Phone Number (e.g., +12223334444)" required>
+                </div>
+                <button type="button" id="send-code-btn" class="btn btn-primary">Send Code</button>
+            </form>
+            <div class="login-footer">
+                <a href="#" id="back-to-signup1-link">← Go Back</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================================== -->
+    <!--   SIGN UP (STEP 3) - PIN ENTRY     -->
+    <!-- ================================== -->
+    <div id="pin-code-wrapper" class="view">
+        <div class="login-container glass-card">
+            <img src="assets/autotuna-logo.png" alt="Autotuna Logo" class="logo" style="width: 120px; height: auto;">
+            <h1>Enter Verification Code</h1>
+            <p>A code has been sent to your Telegram account.</p>
+            <form id="pin-code-form">
+                <div class="input-group"><input type="text" inputmode="numeric" placeholder="_ _ _ _ _" required
+                        style="text-align: center; font-size: 1.5em; letter-spacing: 0.5em;"></div>
+                <button type="button" id="verify-pin-btn" class="btn btn-primary">Verify & Finish</button>
+            </form>
+        </div>
+    </div>
 
     <!-- ======================= -->
     <!--      LOGIN WRAPPER      -->
     <!-- ======================= -->
-    <div id="login-wrapper" class="active">
-        <div id="login-view" class="view active">
-            <div class="login-container glass-card">
-                <img src="assets/autotuna-logo.png" alt="Autotuna Logo" class="logo" style="width: 120px; height: auto;">
-                <h1>Welcome to Autotuna</h1>
-                <p>Your intelligent Telegram assistant.</p>
-                <form id="login-form">
-                    <div class="input-group">
-                        <input type="tel" id="telegram-account" placeholder="Telegram Phone Number" required>
-                    </div>
-                    <button type="submit" class="btn btn-primary">Connect with Telegram</button>
-                </form>
-                <div class="login-footer">
-                    <a href="#">Create an account</a>
-                </div>
+    <div id="login-wrapper" class="view"> <!-- FIX: Added the 'view' class here -->
+        <div class="login-container glass-card">
+            <img src="assets/autotuna-logo.png" alt="Autotuna Logo" class="logo" style="width: 120px; height: auto;">
+            <h1>Welcome Back</h1>
+            <p>Connect your Telegram account to continue.</p>
+            <form id="login-form">
+                <div class="input-group"><input type="tel" id="telegram-account" placeholder="Telegram Phone Number"
+                        required></div>
+                <button type="submit" class="btn btn-primary">Connect with Telegram</button>
+            </form>
+            <div class="login-footer">
+                <a href="#" id="go-to-signup-link">Don't have an account? Sign Up</a>
             </div>
         </div>
     </div>
@@ -34,23 +106,30 @@
     <!-- ======================= -->
     <!--     MAIN APP WRAPPER    -->
     <!-- ======================= -->
-    <div id="main-app-wrapper" style="display: none;">
+    <div id="main-app-wrapper" class="view">
         <nav class="navbar" id="main-navbar">
             <div class="nav-left">
-               <img src="assets/autotuna-logo.png" alt="Autotuna Logo" class="nav-logo" style="width: 80px; height: auto;">
-               <h2>Autotuna</h2>
-           </div>
-           <div class="nav-right">
-               <div class="nav-icon-wrapper" id="notification-icon-wrapper"><i data-feather="bell" class="nav-icon"></i><div class="notification-dot"></div></div>
-               <i data-feather="message-square" class="nav-icon" id="history-icon"></i>
-               <div class="nav-icon-wrapper" id="profile-icon-wrapper"><i data-feather="user" class="nav-icon"></i></div>
-           </div>
+                <img src="assets/autotuna-logo.png" alt="Autotuna Logo" class="nav-logo"
+                    style="width: 80px; height: auto;">
+                <h2>Emotuna</h2>
+            </div>
+            <div class="nav-right">
+                <div class="nav-icon-wrapper" id="notification-icon-wrapper"><i data-feather="bell"
+                        class="nav-icon"></i>
+                    <div class="notification-dot"></div>
+                </div>
+                <i data-feather="message-square" class="nav-icon" id="history-icon"></i>
+                <div class="nav-icon-wrapper" id="profile-icon-wrapper"><i data-feather="user" class="nav-icon"></i>
+                </div>
+            </div>
         </nav>
 
         <div id="profile-dropdown" class="dropdown-menu glass-card">
-            <a href="#" class="dropdown-item" data-target-view="settings-view"><i data-feather="settings"></i> Settings</a>
+            <a href="#" class="dropdown-item" data-target-view="settings-view"><i data-feather="settings"></i>
+                Settings</a>
             <a href="#" class="dropdown-item" data-target-view="privacy-view"><i data-feather="shield"></i> Privacy</a>
-            <div class="dropdown-item toggle-item"><span><i data-feather="zap"></i> Auto DM Mode</span><label class="switch"><input type="checkbox" checked><span class="slider round"></span></label></div>
+            <div class="dropdown-item toggle-item"><span><i data-feather="zap"></i> Auto DM Mode</span><label
+                    class="switch"><input type="checkbox" checked><span class="slider round"></span></label></div>
             <div class="dropdown-divider"></div>
             <a href="#" class="dropdown-item" id="logout-btn"><i data-feather="log-out"></i> Logout</a>
         </div>
@@ -62,41 +141,114 @@
         <div id="dashboard-view" class="view active">
             <main class="container">
                 <section class="action-section glass-card">
-                     <button id="fetch-messages-btn" class="btn btn-secondary"><i data-feather="download-cloud"></i> Fetch Past Messages</button>
-                     <p>Sync new messages from your Telegram account to categorize and manage.</p>
+                    <div class="action-buttons">
+                        <button id="upload-data-btn" class="btn btn-secondary">
+                            <i data-feather="upload-cloud"></i> Upload Data
+                        </button>
+                        <button id="download-data-btn" class="btn btn-secondary">
+                            <i data-feather="download-cloud"></i> Download Data
+                        </button>
+                        <button id="train-model-btn" class="btn btn-primary">
+                            <i data-feather="cpu"></i> Train Model
+                        </button>
+                    </div>
+                    <p>Manage your AI workflow: upload datasets, download results, and train your model.</p>
                 </section>
-                <section class="messages-section">
-                    <div class="messages-header"><h2>Messages</h2></div>
-                    <div class="message-tabs"><button class="tab-btn active" data-category="important">Important</button><button class="tab-btn" data-category="spam">Spam</button><button class="tab-btn" data-category="offensive">Offensive</button></div>
+                <div id="agent-starter" class="agent-container">
+                    <button id="run-agent-btn" class="btn btn-primary btn-large">
+                        <i data-feather="play-circle"></i> Run Agent
+                    </button>
+                    <p>Start the AI assistant to fetch and categorize your messages.</p>
+                </div>
+
+                <!-- 2. Agent Choice Container (Hidden by default) -->
+                <div id="agent-choice" class="agent-container" style="display: none;">
+                    <p>Choose an AI model to power the agent:</p>
+                    <div class="agent-buttons">
+                        <button class="btn btn-secondary agent-model-btn" data-model="kimi">
+                            <i data-feather="cloud"></i> Kimi (Cloud)
+                        </button>
+                        <button class="btn btn-secondary agent-model-btn" data-model="dpo">
+                            <i data-feather="cpu"></i> Self-trained DPO
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 3. Messages Container (Hidden by default) -->
+                <div id="messages-container" style="display: none;">
+                    <div class="messages-header">
+                        <h2>Messages</h2>
+                    </div>
+                    <div class="message-tabs">
+                        <button class="tab-btn active" data-category="important">Important</button>
+                        <button class="tab-btn" data-category="spam">Spam</button>
+                        <button class="tab-btn" data-category="offensive">Offensive</button>
+                    </div>
                     <div id="message-list"></div>
                     <button id="show-more-btn" class="show-more-btn">Show More</button>
+                </div>
+
                 </section>
             </main>
         </div>
 
         <div id="history-view" class="view">
             <main class="container">
-                <div class="page-header"><button class="back-btn" data-target-view="dashboard-view"><i data-feather="arrow-left"></i> Back</button><h2>AI Replies History</h2></div>
+                <div class="page-header"><button class="back-btn" data-target-view="dashboard-view"><i
+                            data-feather="arrow-left"></i> Back</button>
+                    <h2>AI Replies History</h2>
+                </div>
                 <div id="history-list" class="history-grid"></div>
             </main>
         </div>
-        
+
         <div id="settings-view" class="view">
             <main class="container">
-                <div class="page-header"><button class="back-btn" data-target-view="dashboard-view"><i data-feather="arrow-left"></i> Back</button><h2>Settings</h2></div>
-                <div class="settings-section glass-card"><h3>Account Information</h3><div class="setting-item"><span>Connected Telegram Account</span><span class="setting-value">+1 234 567 8900</span></div><div class="setting-item"><span>Subscription Plan</span><span class="setting-value">Pro Plan</span></div><div class="setting-item"><span>Email</span><span class="setting-value">user@example.com</span></div></div>
-                <div class="settings-section glass-card"><h3>Notification Preferences</h3><div class="setting-item"><span>New Important Messages</span><label class="switch"><input type="checkbox" checked><span class="slider round"></span></label></div><div class="setting-item"><span>Weekly Summary</span><label class="switch"><input type="checkbox"><span class="slider round"></span></label></div></div>
+                <div class="page-header"><button class="back-btn" data-target-view="dashboard-view"><i
+                            data-feather="arrow-left"></i> Back</button>
+                    <h2>Settings</h2>
+                </div>
+                <div class="settings-section glass-card">
+                    <h3>Account Information</h3>
+                    <div class="setting-item"><span>Connected Telegram Account</span><span class="setting-value">+1 234
+                            567 8900</span></div>
+                    <div class="setting-item"><span>Subscription Plan</span><span class="setting-value">Pro Plan</span>
+                    </div>
+                    <div class="setting-item"><span>Email</span><span class="setting-value">user@example.com</span>
+                    </div>
+                </div>
+                <div class="settings-section glass-card">
+                    <h3>Notification Preferences</h3>
+                    <div class="setting-item"><span>New Important Messages</span><label class="switch"><input
+                                type="checkbox" checked><span class="slider round"></span></label></div>
+                    <div class="setting-item"><span>Weekly Summary</span><label class="switch"><input
+                                type="checkbox"><span class="slider round"></span></label></div>
+                </div>
             </main>
         </div>
 
         <div id="privacy-view" class="view">
             <main class="container">
-                <div class="page-header"><button class="back-btn" data-target-view="dashboard-view"><i data-feather="arrow-left"></i> Back</button><h2>Privacy Policy</h2></div>
-                <div class="privacy-content glass-card"><h3>1. Information We Collect</h3><p>We only collect information necessary to provide our service, such as your Telegram account identifier to fetch and respond to messages. We do not store your personal messages on our servers long-term. All message processing is done in real-time.</p><h3>2. How We Use Your Information</h3><p>Your information is used exclusively to power the Autotuna assistant. We do not sell, trade, or otherwise transfer your personally identifiable information to outside parties. This does not include trusted third parties who assist us in operating our service, so long as those parties agree to keep this information confidential.</p></div>
+                <div class="page-header"><button class="back-btn" data-target-view="dashboard-view"><i
+                            data-feather="arrow-left"></i> Back</button>
+                    <h2>Privacy Policy</h2>
+                </div>
+                <div class="privacy-content glass-card">
+                    <h3>1. Information We Collect</h3>
+                    <p>We only collect information necessary to provide our service, such as your Telegram account
+                        identifier to fetch and respond to messages. We do not store your personal messages on our
+                        servers long-term. All message processing is done in real-time.</p>
+                    <h3>2. How We Use Your Information</h3>
+                    <p>Your information is used exclusively to power the Autotuna assistant. We do not sell, trade, or
+                        otherwise transfer your personally identifiable information to outside parties. This does not
+                        include trusted third parties who assist us in operating our service, so long as those parties
+                        agree to keep this information confidential.</p>
+                </div>
             </main>
         </div>
     </div>
 
     <script src="script.js"></script>
 </body>
+
 </html>
