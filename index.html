@@ -10,11 +10,14 @@
 </head>
 
 <body>
+    <div id="app-loader">
+        <div class="spinner"></div>
+    </div>
 
     <!-- ======================= -->
     <!--     INTRO WRAPPER       -->
     <!-- ======================= -->
-    <div id="intro-wrapper" class="view active">
+    <div id="intro-wrapper" class="view ">
         <div class="intro-container glass-card">
             <img src="assets/autotuna-logo.png" alt="Autotuna Logo" class="logo" style="width: 120px; height: auto;">
             <h1>Meet Autotuna</h1>
@@ -32,13 +35,26 @@
             <img src="assets/autotuna-logo.png" alt="Autotuna Logo" class="logo" style="width: 120px; height: auto;">
             <h1>Create an Account</h1>
             <p>Join Autotuna to automate your workflow.</p>
+            <!-- Inside #signup-wrapper in index.html -->
             <form id="signup-form">
-                <div class="input-group"><input type="text" placeholder="Username" required></div>
-                <div class="input-grid">
-                    <div class="input-group"><input type="text" placeholder="First Name" required></div>
-                    <div class="input-group"><input type="text" placeholder="Last Name" required></div>
+                <div class="input-group">
+                    <input type="text" name="username" placeholder="Username" required>
                 </div>
-                <div class="input-group"><input type="email" placeholder="Email" required></div>
+                <div class="input-grid">
+                    <div class="input-group">
+                        <input type="text" name="firstname" placeholder="First Name" required>
+                    </div>
+                    <div class="input-group">
+                        <input type="text" name="lastname" placeholder="Last Name" required>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <input type="email" name="email" placeholder="Email" required>
+                </div>
+
+                <div class="input-group">
+                    <input type="password" name="password" placeholder="Password" required>
+                </div>
                 <button type="button" id="signup-next-btn" class="btn btn-primary">Next</button>
             </form>
             <div class="login-footer">
@@ -47,27 +63,138 @@
         </div>
     </div>
 
+    <!-- In index.html, after the #signup-wrapper -->
+
     <!-- ================================== -->
-    <!--  SIGN UP (STEP 2) - TELEGRAM CONNECT -->
+    <!--  CHOOSE PLATFORM WRAPPER (NEW)   -->
     <!-- ================================== -->
-    <div id="telegram-connect-wrapper" class="view">
+    <div id="platform-choice-wrapper" class="view">
         <div class="login-container glass-card">
             <img src="assets/autotuna-logo.png" alt="Autotuna Logo" class="logo" style="width: 120px; height: auto;">
-            <h1>Connect Your Account</h1>
-            <p>Enter your Telegram developer credentials.</p>
-            <form id="telegram-connect-form">
-                <div class="input-group"><input type="text" placeholder="Telegram API ID" required></div>
-                <div class="input-group"><input type="text" placeholder="Telegram API Hash" required></div>
-                <div class="input-group"><input type="tel" placeholder="Phone Number (e.g., +12223334444)" required>
+            <h1>Choose a Platform</h1>
+            <p>Select an account to connect with Emotuna.</p>
+
+            <div class="platform-grid">
+                <!-- Telegram (The working one) -->
+                <div class="platform-card" id="connect-telegram-card">
+                    <img src="assets/telegram-logo.svg" alt="Telegram">
+                    <span>Telegram</span>
                 </div>
-                <button type="button" id="send-code-btn" class="btn btn-primary">Send Code</button>
-            </form>
+
+                <!-- WhatsApp (Coming Soon) -->
+                <div class="platform-card coming-soon" data-platform="WhatsApp">
+                    <img src="assets/whatsapp-logo.svg" alt="WhatsApp">
+                    <span>WhatsApp</span>
+                    <div class="soon-badge">Soon</div>
+                </div>
+
+                <!-- Discord (Coming Soon) -->
+                <div class="platform-card coming-soon" data-platform="Discord">
+                    <img src="assets/discord-logo.svg" alt="Discord">
+                    <span>Discord</span>
+                    <div class="soon-badge">Soon</div>
+                </div>
+                <div class="platform-card coming-soon" data-platform="Messenger">
+                    <img src="assets/messenger-logo.svg" alt="Messenger">
+                    <span>Messenger</span>
+                    <div class="soon-badge">Soon</div>
+                </div>
+
+                <!-- More platforms can be added here -->
+            </div>
+
             <div class="login-footer">
-                <a href="#" id="back-to-signup1-link">← Go Back</a>
+                <a href="#" id="back-to-signup-link">← Go Back to Sign Up</a>
             </div>
         </div>
     </div>
 
+    <!-- ================================== -->
+    <!--   COMING SOON MODAL (NEW)        -->
+    <!-- ================================== -->
+    <div id="coming-soon-modal" class="modal-overlay" style="display: none;">
+        <div class="glass-card coming-soon-content">
+            <i data-feather="tool" class="coming-soon-icon"></i>
+            <h2>Under Construction</h2>
+            <p>Integration with <b id="modal-platform-name">WhatsApp</b> is coming soon! We're working hard to bring you
+                more platforms.</p>
+            <button id="close-soon-modal-btn" class="btn btn-primary">Got it!</button>
+        </div>
+    </div>
+
+
+    <!-- In index.html -->
+
+    <!-- ================================== -->
+    <!--  TELEGRAM CONNECT WRAPPER (NEW)  -->
+    <!-- ================================== -->
+    <div id="telegram-connect-wrapper" class="view">
+        <div class="connect-container glass-card">
+            <!-- Left Column: The Form -->
+            <div class="connect-form-section">
+                <img src="assets/autotuna-logo.png" alt="Autotuna Logo" class="logo"
+                    style="width: 100px; height: auto;">
+                <h1>Connect Your Account</h1>
+                <p>Enter your Telegram developer credentials.</p>
+                <form id="telegram-connect-form">
+                    <div class="input-group">
+                        <label for="api-id">Telegram API ID</label>
+                        <input type="text" id="api-id" name="telegram_api_id" placeholder="e.g., 12345678" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="api-hash">Telegram API Hash</label>
+                        <input type="text" id="api-hash" name="telegram_api_hash"
+                            placeholder="e.g., 0123456789abcdef0123456789abcdef" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="phone-number">Phone Number</label>
+                        <input type="tel" id="phone-number" name="telegram_mobile_number"
+                            placeholder="e.g., +12223334444" required>
+                    </div>
+                    <button type="button" id="send-code-btn" class="btn btn-primary">Connect & Continue</button>
+                </form>
+                <div class="login-footer">
+                    <a href="#" id="back-to-platform-choice-link">← Choose a different platform</a>
+                </div>
+            </div>
+
+            <!-- Right Column: The Instructions -->
+            <div class="connect-instructions-section">
+                <h2>How to get your credentials</h2>
+                <div class="instruction-step">
+                    <div class="step-number">1</div>
+                    <div class="step-text">
+                        <p>Go to the official Telegram Apps page.</p>
+                        <a href="https://my.telegram.org/apps" target="_blank" class="btn btn-secondary">
+                            Open my.telegram.org <i data-feather="external-link"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="instruction-step">
+                    <div class="step-number">2</div>
+                    <div class="step-text">
+                        <p>Log in with your Telegram account. You will need to enter your phone number and the
+                            confirmation code sent to your Telegram app.</p>
+                    </div>
+                </div>
+                <div class="instruction-step">
+                    <div class="step-number">3</div>
+                    <div class="step-text">
+                        <p>Under "API development tools," fill out the form for a new application. You can use "Emotuna"
+                            for the App title and short name.</p>
+                    </div>
+                </div>
+                <div class="instruction-step">
+                    <div class="step-number">4</div>
+                    <div class="step-text">
+                        <p>Once your app is created, you will see the <strong>`api_id`</strong> and
+                            <strong>`api_hash`</strong>. Copy and paste them into the fields on the left.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
     <!-- ================================== -->
     <!--   SIGN UP (STEP 3) - PIN ENTRY     -->
     <!-- ================================== -->
@@ -77,7 +204,8 @@
             <h1>Enter Verification Code</h1>
             <p>A code has been sent to your Telegram account.</p>
             <form id="pin-code-form">
-                <div class="input-group"><input type="text" inputmode="numeric" placeholder="_ _ _ _ _" required
+                <div class="input-group"><input type="text" name="telegram_pin_code" inputmode="numeric"
+                        placeholder="_ _ _ _ _" required
                         style="text-align: center; font-size: 1.5em; letter-spacing: 0.5em;"></div>
                 <button type="button" id="verify-pin-btn" class="btn btn-primary">Verify & Finish</button>
             </form>
@@ -87,16 +215,28 @@
     <!-- ======================= -->
     <!--      LOGIN WRAPPER      -->
     <!-- ======================= -->
-    <div id="login-wrapper" class="view"> <!-- FIX: Added the 'view' class here -->
+    <!-- Inside #login-wrapper in index.html -->
+
+    <div id="login-wrapper" class="view">
         <div class="login-container glass-card">
             <img src="assets/autotuna-logo.png" alt="Autotuna Logo" class="logo" style="width: 120px; height: auto;">
             <h1>Welcome Back</h1>
-            <p>Connect your Telegram account to continue.</p>
+            <p>Log in to continue to your dashboard.</p> <!-- Updated text -->
+
+            <!-- THIS IS THE CORRECTED FORM -->
             <form id="login-form">
-                <div class="input-group"><input type="tel" id="telegram-account" placeholder="Telegram Phone Number"
-                        required></div>
-                <button type="submit" class="btn btn-primary">Connect with Telegram</button>
+                <div class="input-group">
+                    <!-- Add name="username" -->
+                    <input type="text" name="username" placeholder="Username" required>
+                </div>
+                <div class="input-group">
+                    <!-- Add password field with name="password" -->
+                    <input type="password" name="password" placeholder="Password" required>
+                </div>
+                <!-- Changed button type to "submit" for better form handling -->
+                <button type="submit" class="btn btn-primary">Login</button>
             </form>
+
             <div class="login-footer">
                 <a href="#" id="go-to-signup-link">Don't have an account? Sign Up</a>
             </div>
@@ -128,32 +268,73 @@
             <a href="#" class="dropdown-item" data-target-view="settings-view"><i data-feather="settings"></i>
                 Settings</a>
             <a href="#" class="dropdown-item" data-target-view="privacy-view"><i data-feather="shield"></i> Privacy</a>
+            <a href="#" class="dropdown-item" data-target-view="about-us-view">
+                <i data-feather="users"></i> About Us
+            </a>
             <div class="dropdown-item toggle-item"><span><i data-feather="zap"></i> Auto DM Mode</span><label
-                    class="switch"><input type="checkbox" checked><span class="slider round"></span></label></div>
+                    class="switch"><input type="checkbox" id="auto-dm-toggle"><span class="slider round"></span></label>
+            </div>
             <div class="dropdown-divider"></div>
             <a href="#" class="dropdown-item" id="logout-btn"><i data-feather="log-out"></i> Logout</a>
         </div>
+        <!-- In index.html -->
         <div id="notification-panel" class="dropdown-menu glass-card">
-            <div class="dropdown-header">Notifications</div>
-            <div id="notification-list"></div>
-        </div>
+            <div class="dropdown-header">
+                <span>Notifications</span>
+                <!-- Actions for when items are selected -->
+                <div id="notification-actions" class="notification-actions" style="display: none;">
+                    <button id="delete-notif-btn" class="btn-action" title="Delete Selected">
+                        <i data-feather="trash-2"></i>
+                    </button>
+                </div>
+            </div>
 
-        <div id="dashboard-view" class="view active">
-            <main class="container">
-                <section class="action-section glass-card">
-                    <div class="action-buttons">
-                        <button id="upload-data-btn" class="btn btn-secondary">
-                            <i data-feather="upload-cloud"></i> Upload Data
-                        </button>
-                        <button id="download-data-btn" class="btn btn-secondary">
-                            <i data-feather="download-cloud"></i> Download Data
-                        </button>
-                        <button id="train-model-btn" class="btn btn-primary">
-                            <i data-feather="cpu"></i> Train Model
-                        </button>
-                    </div>
-                    <p>Manage your AI workflow: upload datasets, download results, and train your model.</p>
-                </section>
+            <!-- The list of notifications -->
+            <div id="notification-list">
+                <!-- JS will render notifications here -->
+            </div>
+
+            <!-- NEW: A footer for global actions -->
+            <div id="notification-footer" class="notification-footer">
+                <button id="mark-all-read-btn" class="btn-link">Mark All as Read</button>
+                <button id="delete-all-notif-btn" class="btn-link btn-link-danger">Delete All</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================== -->
+    <!-- THIS IS THE CORRECTED DASHBOARD VIEW HTML      -->
+    <!-- ============================================== -->
+    <div id="dashboard-view" class="view">
+        <main class="container">
+
+            <!-- Section 1: Action Buttons -->
+            <section class="action-section glass-card">
+                <div class="action-buttons">
+                    <button id="upload-data-btn" class="btn btn-secondary">
+                        <i data-feather="upload-cloud"></i> Upload Data
+                    </button>
+                    <input type="file" id="file-upload-input" accept=".json" style="display: none;">
+                    <button id="download-data-btn" class="btn btn-secondary">
+                        <i data-feather="download-cloud"></i> Download Data
+                    </button>
+                    <button id="train-model-btn" class="btn btn-primary">
+                        <i data-feather="cpu"></i> Train Model
+                    </button>
+                </div>
+                <p>Manage your AI workflow: upload datasets, download results, and train your model.</p>
+            </section>
+
+            <!-- Section 2: Agent Runner (This is the new messages section) -->
+            <!-- ========================================================= -->
+            <!-- THIS IS THE CORRECTED AND COMPLETE MESSAGES SECTION     -->
+            <!-- ========================================================= -->
+            <!-- ========================================================= -->
+            <!-- AGENT RUNNER / MESSAGES SECTION                         -->
+            <!-- ========================================================= -->
+            <section class="messages-section">
+
+                <!-- 1. Agent Starter Container (Visible when agent is OFF) -->
                 <div id="agent-starter" class="agent-container">
                     <button id="run-agent-btn" class="btn btn-primary btn-large">
                         <i data-feather="play-circle"></i> Run Agent
@@ -161,7 +342,7 @@
                     <p>Start the AI assistant to fetch and categorize your messages.</p>
                 </div>
 
-                <!-- 2. Agent Choice Container (Hidden by default) -->
+                <!-- 2. Agent Choice Container (Visible after clicking "Run Agent") -->
                 <div id="agent-choice" class="agent-container" style="display: none;">
                     <p>Choose an AI model to power the agent:</p>
                     <div class="agent-buttons">
@@ -174,78 +355,245 @@
                     </div>
                 </div>
 
-                <!-- 3. Messages Container (Hidden by default) -->
+                <!-- 2.5 Agent Starting Container (Visible during startup) -->
+                <div id="agent-starting" class="agent-container" style="display: none;">
+                    <div class="status-indicator">
+                        <div class="status-dot-starting"></div>
+                        <span>Starting Agent...</span>
+                    </div>
+                    <p>This may take up to 20 seconds. Please wait.</p>
+                </div>
+
+                <!-- 3. Agent Active Container (Visible when agent is ON) -->
+                <div id="agent-active" class="agent-container" style="display: none;">
+                    <div class="status-indicator">
+                        <div class="status-dot"></div>
+                        <span>Agent is Running</span>
+                    </div>
+                    <p>The AI assistant is actively monitoring your messages.</p>
+                    <button id="stop-agent-btn" class="btn btn-danger">
+                        <i data-feather="stop-circle"></i> Turn Off Agent
+                    </button>
+                </div>
+
+                <!-- 4. Messages Container (Visible when agent is ON) -->
                 <div id="messages-container" style="display: none;">
                     <div class="messages-header">
                         <h2>Messages</h2>
                     </div>
                     <div class="message-tabs">
                         <button class="tab-btn active" data-category="important">Important</button>
-                        <button class="tab-btn" data-category="spam">Spam</button>
+                        <button class="tab-btn" data-category="general">General</button>
                         <button class="tab-btn" data-category="offensive">Offensive</button>
                     </div>
                     <div id="message-list"></div>
-                    <button id="show-more-btn" class="show-more-btn">Show More</button>
                 </div>
 
-                </section>
-            </main>
-        </div>
+            </section><!-- This section correctly wraps all agent/messages content -->
 
-        <div id="history-view" class="view">
-            <main class="container">
-                <div class="page-header"><button class="back-btn" data-target-view="dashboard-view"><i
-                            data-feather="arrow-left"></i> Back</button>
-                    <h2>AI Replies History</h2>
-                </div>
-                <div id="history-list" class="history-grid"></div>
-            </main>
-        </div>
+        </main>
+    </div>
+    <div id="history-view" class="view">
+        <main class="container">
+            <div class="page-header"><button class="back-btn" data-target-view="dashboard-view"><i
+                        data-feather="arrow-left"></i> Back</button>
+                <h2>AI Replies History</h2>
+            </div>
+            <div id="history-list" class="history-grid"></div>
+        </main>
+    </div>
 
-        <div id="settings-view" class="view">
-            <main class="container">
-                <div class="page-header"><button class="back-btn" data-target-view="dashboard-view"><i
-                            data-feather="arrow-left"></i> Back</button>
-                    <h2>Settings</h2>
-                </div>
-                <div class="settings-section glass-card">
-                    <h3>Account Information</h3>
-                    <div class="setting-item"><span>Connected Telegram Account</span><span class="setting-value">+1 234
-                            567 8900</span></div>
-                    <div class="setting-item"><span>Subscription Plan</span><span class="setting-value">Pro Plan</span>
+    <!-- ======================= -->
+    <!--     SETTINGS VIEW       -->
+    <!-- ======================= -->
+    <div id="settings-view" class="view">
+        <main class="container">
+            <div class="page-header">
+                <button class="back-btn" data-target-view="dashboard-view">
+                    <i data-feather="arrow-left"></i> Back
+                </button>
+                <h2>Settings</h2>
+            </div>
+
+            <!-- Account Information Section -->
+            <div class="settings-section glass-card">
+                <h3>Account Information</h3>
+
+                <!-- Username Setting Item -->
+                <div class="setting-item editable">
+                    <span>Username</span>
+                    <div class="setting-value-wrapper">
+                        <!-- Display Mode -->
+                        <div class="display-mode active" id="username-display-mode">
+                            <span class="setting-value" id="setting-username-display"></span>
+                            <button class="btn-edit" id="edit-username-btn"><i data-feather="edit-2"></i></button>
+                        </div>
+                        <!-- Edit Mode (hidden by default) -->
+                        <div class="edit-mode" id="username-edit-mode">
+                            <input type="text" id="setting-username-input" class="setting-input">
+                            <button class="btn-save" id="save-username-btn"><i data-feather="check"></i></button>
+                            <button class="btn-cancel" id="cancel-username-btn"><i data-feather="x"></i></button>
+                        </div>
                     </div>
-                    <div class="setting-item"><span>Email</span><span class="setting-value">user@example.com</span>
+                </div>
+
+                <!-- Email Setting Item -->
+                <div class="setting-item editable">
+                    <span>Email</span>
+                    <div class="setting-value-wrapper">
+                        <!-- Display Mode -->
+                        <div class="display-mode active" id="email-display-mode">
+                            <span class="setting-value" id="setting-email-display"></span>
+                            <button class="btn-edit" id="edit-email-btn"><i data-feather="edit-2"></i></button>
+                        </div>
+                        <!-- Edit Mode (hidden by default) -->
+                        <div class="edit-mode" id="email-edit-mode">
+                            <input type="email" id="setting-email-input" class="setting-input">
+                            <button class="btn-save" id="save-email-btn"><i data-feather="check"></i></button>
+                            <button class="btn-cancel" id="cancel-email-btn"><i data-feather="x"></i></button>
+                        </div>
                     </div>
                 </div>
-                <div class="settings-section glass-card">
-                    <h3>Notification Preferences</h3>
-                    <div class="setting-item"><span>New Important Messages</span><label class="switch"><input
-                                type="checkbox" checked><span class="slider round"></span></label></div>
-                    <div class="setting-item"><span>Weekly Summary</span><label class="switch"><input
-                                type="checkbox"><span class="slider round"></span></label></div>
-                </div>
-            </main>
-        </div>
 
-        <div id="privacy-view" class="view">
-            <main class="container">
-                <div class="page-header"><button class="back-btn" data-target-view="dashboard-view"><i
-                            data-feather="arrow-left"></i> Back</button>
-                    <h2>Privacy Policy</h2>
+                <!-- Read-only items -->
+                <div class="setting-item">
+                    <span>Connected Telegram Account</span>
+                    <span class="setting-value" id="setting-phone-display">+1 234 567 8900</span>
                 </div>
-                <div class="privacy-content glass-card">
-                    <h3>1. Information We Collect</h3>
-                    <p>We only collect information necessary to provide our service, such as your Telegram account
-                        identifier to fetch and respond to messages. We do not store your personal messages on our
-                        servers long-term. All message processing is done in real-time.</p>
-                    <h3>2. How We Use Your Information</h3>
-                    <p>Your information is used exclusively to power the Autotuna assistant. We do not sell, trade, or
-                        otherwise transfer your personally identifiable information to outside parties. This does not
-                        include trusted third parties who assist us in operating our service, so long as those parties
-                        agree to keep this information confidential.</p>
+                <div class="setting-item">
+                    <span>Subscription Plan</span>
+                    <span class="setting-value" id="setting-plan-display">Pro Plan</span>
                 </div>
-            </main>
+            </div>
+
+            <!-- Notification Preferences Section -->
+            <div class="settings-section glass-card">
+                <h3>Notification Preferences</h3>
+                <div class="setting-item">
+                    <span>New Important Messages</span>
+                    <label class="switch"><input type="checkbox" checked><span class="slider round"></span></label>
+                </div>
+                <div class="setting-item">
+                    <span>Weekly Summary</span>
+                    <label class="switch"><input type="checkbox"><span class="slider round"></span></label>
+                </div>
+            </div>
+        </main>
+    </div>
+    <!-- At the bottom of index.html, before </body> -->
+
+    <!-- ======================= -->
+    <!--     PIN CODE MODAL      -->
+    <!-- ======================= -->
+    <div id="pin-modal-overlay" class="modal-overlay" style="display: none;">
+        <div id="pin-modal-content" class="login-container glass-card">
+            <img src="assets/autotuna-logo.png" alt="Autotuna Logo" class="logo" style="width: 120px; height: auto;">
+            <h1>Verification Required</h1>
+            <p>A code has been sent to your Telegram account. Please enter it to start the agent.</p>
+            <form id="modal-pin-form">
+                <div class="input-group">
+                    <input type="text" name="telegram_pin_code" inputmode="numeric" placeholder="_ _ _ _ _" required
+                        style="text-align: center; font-size: 1.5em; letter-spacing: 0.5em;">
+                </div>
+                <div class="modal-buttons">
+                    <button type="button" id="modal-cancel-btn" class="btn btn-secondary">Cancel</button>
+                    <button type="button" id="modal-verify-btn" class="btn btn-primary">Verify & Start</button>
+                </div>
+            </form>
         </div>
+    </div>
+
+    <div id="privacy-view" class="view">
+        <main class="container">
+            <div class="page-header"><button class="back-btn" data-target-view="dashboard-view"><i
+                        data-feather="arrow-left"></i> Back</button>
+                <h2>Privacy Policy</h2>
+            </div>
+            <div class="privacy-content glass-card">
+                <h3>1. Information We Collect</h3>
+                <p>We only collect information necessary to provide our service, such as your Telegram account
+                    identifier to fetch and respond to messages. We do not store your personal messages on our
+                    servers long-term. All message processing is done in real-time.</p>
+                <h3>2. How We Use Your Information</h3>
+                <p>Your information is used exclusively to power the Autotuna assistant. We do not sell, trade, or
+                    otherwise transfer your personally identifiable information to outside parties. This does not
+                    include trusted third parties who assist us in operating our service, so long as those parties
+                    agree to keep this information confidential.</p>
+            </div>
+        </main>
+    </div>
+
+
+    </div>
+
+    <!-- ======================= -->
+    <!--     ABOUT US VIEW       -->
+    <!-- ======================= -->
+    <div id="about-us-view" class="view">
+        <main class="container">
+            <div class="page-header">
+                <button class="back-btn" data-target-view="dashboard-view">
+                    <i data-feather="arrow-left"></i> Back
+                </button>
+                <h2>About Us</h2>
+            </div>
+
+            <div class="about-us-content">
+                <div class="team-intro glass-card">
+                    <h3>Meet the Team</h3>
+                    <p>We are a duo of passionate developers dedicated to creating intelligent, user-centric solutions.
+                        Autotuna is the result of our combined expertise in AI and user experience design.</p>
+                </div>
+
+                <div class="team-container">
+                    <!-- Member 1: Backend & AI/ML -->
+                    <div class="profile-card">
+                        <div class="profile-avatar" id="avatar-ahamed"></div>
+                        <div class="profile-details">
+                            <h4>Ahammed Shawki</h4>
+                            <p class="role">BACKEND & AI/ML ENGINEER</p>
+                            <div class="skills">
+                                <span class="skill-tag">Python</span>
+                                <span class="skill-tag">PyTorch</span>
+                                <span class="skill-tag">LLMs</span>
+                                <span class="skill-tag">Cloud Architecture</span>
+                            </div>
+                            <p class="bio">
+                                Ahammed is the architect of the AI engine, training the models and building the robust
+                                API that powers Autotuna.
+                            </p>
+                            <div class="social-links">
+                                <a href="#" title="GitHub"><i data-feather="github"></i></a>
+                                <a href="#" title="LinkedIn"><i data-feather="linkedin"></i></a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Member 2: Frontend & UI/UX -->
+                    <div class="profile-card">
+                        <div class="profile-avatar" id="avatar-muntaha"></div>
+                        <div class="profile-details">
+                            <h4>Mumtahina Ambrin</h4>
+                            <p class="role">FRONTEND & UI/UX DEVELOPER</p>
+                            <div class="skills">
+                                <span class="skill-tag">JavaScript</span>
+                                <span class="skill-tag">CSS</span>
+                                <span class="skill-tag">UX Design</span>
+                                <span class="skill-tag">Figma</span>
+                            </div>
+                            <p class="bio">
+                                Muntahina crafted this intuitive user interface, focusing on a seamless and visually
+                                appealing experience from the ground up.
+                            </p>
+                            <div class="social-links">
+                                <a href="#" title="GitHub"><i data-feather="github"></i></a>
+                                <a href="#" title="Dribbble"><i data-feather="dribbble"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
     </div>
 
     <script src="script.js"></script>
