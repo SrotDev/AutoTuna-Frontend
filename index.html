@@ -77,25 +77,25 @@
             <div class="platform-grid">
                 <!-- Telegram (The working one) -->
                 <div class="platform-card" id="connect-telegram-card">
-                    <img src="assets/telegram-logo.svg" alt="Telegram">
+                    <img src="assets/telegram-logo.png" alt="Telegram">
                     <span>Telegram</span>
                 </div>
 
                 <!-- WhatsApp (Coming Soon) -->
                 <div class="platform-card coming-soon" data-platform="WhatsApp">
-                    <img src="assets/whatsapp-logo.svg" alt="WhatsApp">
+                    <img src="assets/whatsapp-logo.png" alt="WhatsApp">
                     <span>WhatsApp</span>
                     <div class="soon-badge">Soon</div>
                 </div>
 
                 <!-- Discord (Coming Soon) -->
                 <div class="platform-card coming-soon" data-platform="Discord">
-                    <img src="assets/discord-logo.svg" alt="Discord">
+                    <img src="assets/discord-logo.png" alt="Discord">
                     <span>Discord</span>
                     <div class="soon-badge">Soon</div>
                 </div>
                 <div class="platform-card coming-soon" data-platform="Messenger">
-                    <img src="assets/messenger-logo.svg" alt="Messenger">
+                    <img src="assets/messenger-logo.png" alt="Messenger">
                     <span>Messenger</span>
                     <div class="soon-badge">Soon</div>
                 </div>
@@ -247,281 +247,279 @@
     <!--     MAIN APP WRAPPER    -->
     <!-- ======================= -->
     <div id="main-app-wrapper" class="view">
+        <!-- The navbar is the first child -->
         <nav class="navbar" id="main-navbar">
             <div class="nav-left">
-                <img src="assets/autotuna-logo.png" alt="Autotuna Logo" class="nav-logo"
-                    style="width: 80px; height: auto;">
+                <img src="assets/autotuna-logo.png" alt="Autotuna Logo" class="nav-logo">
                 <h2>Emotuna</h2>
             </div>
+
             <div class="nav-right">
-                <div class="nav-icon-wrapper" id="notification-icon-wrapper"><i data-feather="bell"
-                        class="nav-icon"></i>
+                <!-- Notification Icon & Panel -->
+                <div class="nav-icon-wrapper" id="notification-icon-wrapper">
+                    <i data-feather="bell" class="nav-icon"></i>
                     <div class="notification-dot"></div>
+
+                    <div id="notification-panel" class="dropdown-menu">
+                        <div class="dropdown-header">
+                            <span>Notifications</span>
+                            <button id="mark-all-read-btn" class="btn-link">Mark All as Read</button>
+                        </div>
+                        <div id="notification-list"></div>
+                        <div id="notification-footer">
+                            <button id="delete-all-btn" class="btn-link btn-link-danger">Delete All</button>
+                        </div>
+                    </div>
                 </div>
-                <i data-feather="message-square" class="nav-icon" id="history-icon"></i>
-                <div class="nav-icon-wrapper" id="profile-icon-wrapper"><i data-feather="user" class="nav-icon"></i>
+
+                <!-- History Icon -->
+                <div class="nav-icon-wrapper">
+                    <i data-feather="message-square" class="nav-icon" id="history-icon"></i>
+                </div>
+
+                <!-- Profile Icon & Dropdown -->
+                <div class="nav-icon-wrapper" id="profile-icon-wrapper">
+                    <i data-feather="user" class="nav-icon"></i>
+                    <div id="profile-dropdown" class="dropdown-menu glass-card">
+                        <a href="#" class="dropdown-item" data-target-view="settings-view"><i
+                                data-feather="settings"></i> Settings</a>
+                        <a href="#" class="dropdown-item" data-target-view="privacy-view"><i data-feather="shield"></i>
+                            Privacy</a>
+                        <a href="#" class="dropdown-item" data-target-view="about-us-view"><i data-feather="users"></i>
+                            About Us</a>
+                            
+                        <div class="dropdown-item toggle-item">
+                            <span><i data-feather="zap"></i> Auto DM Mode</span>
+                            <label class="switch"><input type="checkbox" id="auto-dm-toggle"><span
+                                    class="slider round"></span></label>
+
+                        </div>
+                        
+                        <div class="dropdown-divider"></div>
+                        <a href="#" class="dropdown-item" id="logout-btn"><i data-feather="log-out"></i> Logout</a>
+                    </div>
                 </div>
             </div>
         </nav>
 
-        <div id="profile-dropdown" class="dropdown-menu glass-card">
-            <a href="#" class="dropdown-item" data-target-view="settings-view"><i data-feather="settings"></i>
-                Settings</a>
-            <a href="#" class="dropdown-item" data-target-view="privacy-view"><i data-feather="shield"></i> Privacy</a>
-            <a href="#" class="dropdown-item" data-target-view="about-us-view">
-                <i data-feather="users"></i> About Us
-            </a>
-            <div class="dropdown-item toggle-item"><span><i data-feather="zap"></i> Auto DM Mode</span><label
-                    class="switch"><input type="checkbox" id="auto-dm-toggle"><span class="slider round"></span></label>
-            </div>
-            <div class="dropdown-divider"></div>
-            <a href="#" class="dropdown-item" id="logout-btn"><i data-feather="log-out"></i> Logout</a>
-        </div>
-        <!-- In index.html -->
-        <div id="notification-panel" class="dropdown-menu glass-card">
-            <div class="dropdown-header">
-                <span>Notifications</span>
-                <!-- Actions for when items are selected -->
-                <div id="notification-actions" class="notification-actions" style="display: none;">
-                    <button id="delete-notif-btn" class="btn-action" title="Delete Selected">
-                        <i data-feather="trash-2"></i>
-                    </button>
-                </div>
-            </div>
+        <!-- ============================================== -->
+        <!-- THIS IS THE CORRECTED DASHBOARD VIEW HTML      -->
+        <!-- ============================================== -->
+        <div id="dashboard-view" class="view">
+            <main class="container">
 
-            <!-- The list of notifications -->
-            <div id="notification-list">
-                <!-- JS will render notifications here -->
-            </div>
-
-            <!-- NEW: A footer for global actions -->
-            <div id="notification-footer" class="notification-footer">
-                <button id="mark-all-read-btn" class="btn-link">Mark All as Read</button>
-                <button id="delete-all-notif-btn" class="btn-link btn-link-danger">Delete All</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- ============================================== -->
-    <!-- THIS IS THE CORRECTED DASHBOARD VIEW HTML      -->
-    <!-- ============================================== -->
-    <div id="dashboard-view" class="view">
-        <main class="container">
-
-            <!-- Section 1: Action Buttons -->
-            <section class="action-section glass-card">
-                <div class="action-buttons">
-                    <button id="upload-data-btn" class="btn btn-secondary">
-                        <i data-feather="upload-cloud"></i> Upload Data
-                    </button>
-                    <input type="file" id="file-upload-input" accept=".json" style="display: none;">
-                    <button id="download-data-btn" class="btn btn-secondary">
-                        <i data-feather="download-cloud"></i> Download Data
-                    </button>
-                    <button id="train-model-btn" class="btn btn-primary">
-                        <i data-feather="cpu"></i> Train Model
-                    </button>
-                </div>
-                <p>Manage your AI workflow: upload datasets, download results, and train your model.</p>
-            </section>
-
-            <!-- Section 2: Agent Runner (This is the new messages section) -->
-            <!-- ========================================================= -->
-            <!-- THIS IS THE CORRECTED AND COMPLETE MESSAGES SECTION     -->
-            <!-- ========================================================= -->
-            <!-- ========================================================= -->
-            <!-- AGENT RUNNER / MESSAGES SECTION                         -->
-            <!-- ========================================================= -->
-            <section class="messages-section">
-
-                <!-- 1. Agent Starter Container (Visible when agent is OFF) -->
-                <div id="agent-starter" class="agent-container">
-                    <button id="run-agent-btn" class="btn btn-primary btn-large">
-                        <i data-feather="play-circle"></i> Run Agent
-                    </button>
-                    <p>Start the AI assistant to fetch and categorize your messages.</p>
-                </div>
-
-                <!-- 2. Agent Choice Container (Visible after clicking "Run Agent") -->
-                <div id="agent-choice" class="agent-container" style="display: none;">
-                    <p>Choose an AI model to power the agent:</p>
-                    <div class="agent-buttons">
-                        <button class="btn btn-secondary agent-model-btn" data-model="kimi">
-                            <i data-feather="cloud"></i> Kimi (Cloud)
+                <!-- Section 1: Action Buttons -->
+                <section class="action-section glass-card">
+                    <div class="action-buttons">
+                        <button id="upload-data-btn" class="btn btn-secondary">
+                            <i data-feather="upload-cloud"></i> Upload Data
                         </button>
-                        <button class="btn btn-secondary agent-model-btn" data-model="dpo">
-                            <i data-feather="cpu"></i> Self-trained DPO
+                        <input type="file" id="file-upload-input" accept=".json" style="display: none;">
+                        <button id="download-data-btn" class="btn btn-secondary">
+                            <i data-feather="download-cloud"></i> Download Data
+                        </button>
+                        <button id="train-model-btn" class="btn btn-primary">
+                            <i data-feather="cpu"></i> Train Model
                         </button>
                     </div>
-                </div>
+                    <p>Manage your AI workflow: upload datasets, download results, and train your model.</p>
+                </section>
 
-                <!-- 2.5 Agent Starting Container (Visible during startup) -->
-                <div id="agent-starting" class="agent-container" style="display: none;">
-                    <div class="status-indicator">
-                        <div class="status-dot-starting"></div>
-                        <span>Starting Agent...</span>
+
+                <!-- ========================================================= -->
+                <!-- AGENT RUNNER / MESSAGES SECTION                         -->
+                <!-- ========================================================= -->
+                <section class="messages-section">
+
+                    <!-- 1. Agent Starter Container (Visible when agent is OFF) -->
+                    <div id="agent-starter" class="agent-container">
+                        <button id="run-agent-btn" class="btn btn-primary btn-large">
+                            <i data-feather="play-circle"></i> Run Agent
+                        </button>
+                        <p>Start the AI assistant to fetch and categorize your messages.</p>
                     </div>
-                    <p>This may take up to 20 seconds. Please wait.</p>
-                </div>
 
-                <!-- 3. Agent Active Container (Visible when agent is ON) -->
-                <div id="agent-active" class="agent-container" style="display: none;">
-                    <div class="status-indicator">
-                        <div class="status-dot"></div>
-                        <span>Agent is Running</span>
-                    </div>
-                    <p>The AI assistant is actively monitoring your messages.</p>
-                    <button id="stop-agent-btn" class="btn btn-danger">
-                        <i data-feather="stop-circle"></i> Turn Off Agent
-                    </button>
-                </div>
-
-                <!-- 4. Messages Container (Visible when agent is ON) -->
-                <div id="messages-container" style="display: none;">
-                    <div class="messages-header">
-                        <h2>Messages</h2>
-                    </div>
-                    <div class="message-tabs">
-                        <button class="tab-btn active" data-category="important">Important</button>
-                        <button class="tab-btn" data-category="general">General</button>
-                        <button class="tab-btn" data-category="offensive">Offensive</button>
-                    </div>
-                    <div id="message-list"></div>
-                </div>
-
-            </section><!-- This section correctly wraps all agent/messages content -->
-
-        </main>
-    </div>
-    <div id="history-view" class="view">
-        <main class="container">
-            <div class="page-header"><button class="back-btn" data-target-view="dashboard-view"><i
-                        data-feather="arrow-left"></i> Back</button>
-                <h2>AI Replies History</h2>
-            </div>
-            <div id="history-list" class="history-grid"></div>
-        </main>
-    </div>
-
-    <!-- ======================= -->
-    <!--     SETTINGS VIEW       -->
-    <!-- ======================= -->
-    <div id="settings-view" class="view">
-        <main class="container">
-            <div class="page-header">
-                <button class="back-btn" data-target-view="dashboard-view">
-                    <i data-feather="arrow-left"></i> Back
-                </button>
-                <h2>Settings</h2>
-            </div>
-
-            <!-- Account Information Section -->
-            <div class="settings-section glass-card">
-                <h3>Account Information</h3>
-
-                <!-- Username Setting Item -->
-                <div class="setting-item editable">
-                    <span>Username</span>
-                    <div class="setting-value-wrapper">
-                        <!-- Display Mode -->
-                        <div class="display-mode active" id="username-display-mode">
-                            <span class="setting-value" id="setting-username-display"></span>
-                            <button class="btn-edit" id="edit-username-btn"><i data-feather="edit-2"></i></button>
-                        </div>
-                        <!-- Edit Mode (hidden by default) -->
-                        <div class="edit-mode" id="username-edit-mode">
-                            <input type="text" id="setting-username-input" class="setting-input">
-                            <button class="btn-save" id="save-username-btn"><i data-feather="check"></i></button>
-                            <button class="btn-cancel" id="cancel-username-btn"><i data-feather="x"></i></button>
+                    <!-- 2. Agent Choice Container (Visible after clicking "Run Agent") -->
+                    <div id="agent-choice" class="agent-container" style="display: none;">
+                        <p>Choose an AI model to power the agent:</p>
+                        <div class="agent-buttons">
+                            <button class="btn btn-secondary agent-model-btn" data-model="kimi">
+                                <i data-feather="cloud"></i> Kimi (Cloud)
+                            </button>
+                            <button class="btn btn-secondary agent-model-btn" data-model="dpo">
+                                <i data-feather="cpu"></i> Self-trained DPO
+                            </button>
                         </div>
                     </div>
-                </div>
 
-                <!-- Email Setting Item -->
-                <div class="setting-item editable">
-                    <span>Email</span>
-                    <div class="setting-value-wrapper">
-                        <!-- Display Mode -->
-                        <div class="display-mode active" id="email-display-mode">
-                            <span class="setting-value" id="setting-email-display"></span>
-                            <button class="btn-edit" id="edit-email-btn"><i data-feather="edit-2"></i></button>
+                    <!-- 2.5 Agent Starting Container (Visible during startup) -->
+                    <div id="agent-starting" class="agent-container" style="display: none;">
+                        <div class="status-indicator">
+                            <div class="status-dot-starting"></div>
+                            <span>Starting Agent...</span>
                         </div>
-                        <!-- Edit Mode (hidden by default) -->
-                        <div class="edit-mode" id="email-edit-mode">
-                            <input type="email" id="setting-email-input" class="setting-input">
-                            <button class="btn-save" id="save-email-btn"><i data-feather="check"></i></button>
-                            <button class="btn-cancel" id="cancel-email-btn"><i data-feather="x"></i></button>
-                        </div>
+                        <p>This may take up to 20 seconds. Please wait.</p>
                     </div>
-                </div>
 
-                <!-- Read-only items -->
-                <div class="setting-item">
-                    <span>Connected Telegram Account</span>
-                    <span class="setting-value" id="setting-phone-display">+1 234 567 8900</span>
-                </div>
-                <div class="setting-item">
-                    <span>Subscription Plan</span>
-                    <span class="setting-value" id="setting-plan-display">Pro Plan</span>
-                </div>
-            </div>
+                    <!-- 3. Agent Active Container (Visible when agent is ON) -->
+                    <div id="agent-active" class="agent-container" style="display: none;">
+                        <div class="status-indicator">
+                            <div class="status-dot"></div>
+                            <span>Agent is Running</span>
+                        </div>
+                        <p>The AI assistant is actively monitoring your messages.</p>
+                        <button id="stop-agent-btn" class="btn btn-danger">
+                            <i data-feather="stop-circle"></i> Turn Off Agent
+                        </button>
+                    </div>
 
-            <!-- Notification Preferences Section -->
-            <div class="settings-section glass-card">
-                <h3>Notification Preferences</h3>
-                <div class="setting-item">
-                    <span>New Important Messages</span>
-                    <label class="switch"><input type="checkbox" checked><span class="slider round"></span></label>
-                </div>
-                <div class="setting-item">
-                    <span>Weekly Summary</span>
-                    <label class="switch"><input type="checkbox"><span class="slider round"></span></label>
-                </div>
-            </div>
-        </main>
-    </div>
-    <!-- At the bottom of index.html, before </body> -->
+                    <!-- 4. Messages Container (Visible when agent is ON) -->
+                    <div id="messages-container" style="display: none;">
+                        <div class="messages-header">
+                            <h2>Messages</h2>
+                        </div>
+                        <div class="message-tabs">
+                            <button class="tab-btn active" data-category="important">Important</button>
+                            <button class="tab-btn" data-category="general">General</button>
+                            <button class="tab-btn" data-category="offensive">Offensive</button>
+                        </div>
+                        <div id="message-list"></div>
+                    </div>
 
-    <!-- ======================= -->
-    <!--     PIN CODE MODAL      -->
-    <!-- ======================= -->
-    <div id="pin-modal-overlay" class="modal-overlay" style="display: none;">
-        <div id="pin-modal-content" class="login-container glass-card">
-            <img src="assets/autotuna-logo.png" alt="Autotuna Logo" class="logo" style="width: 120px; height: auto;">
-            <h1>Verification Required</h1>
-            <p>A code has been sent to your Telegram account. Please enter it to start the agent.</p>
-            <form id="modal-pin-form">
-                <div class="input-group">
-                    <input type="text" name="telegram_pin_code" inputmode="numeric" placeholder="_ _ _ _ _" required
-                        style="text-align: center; font-size: 1.5em; letter-spacing: 0.5em;">
-                </div>
-                <div class="modal-buttons">
-                    <button type="button" id="modal-cancel-btn" class="btn btn-secondary">Cancel</button>
-                    <button type="button" id="modal-verify-btn" class="btn btn-primary">Verify & Start</button>
-                </div>
-            </form>
+                </section><!-- This section correctly wraps all agent/messages content -->
+
+            </main>
         </div>
-    </div>
+        <div id="history-view" class="view">
+            <main class="container">
+                <div class="page-header"><button class="back-btn" data-target-view="dashboard-view"><i
+                            data-feather="arrow-left"></i> Back</button>
+                    <h2>AI Replies History</h2>
+                </div>
+                <div id="history-list" class="history-grid"></div>
+            </main>
+        </div>
 
-    <div id="privacy-view" class="view">
-        <main class="container">
-            <div class="page-header"><button class="back-btn" data-target-view="dashboard-view"><i
-                        data-feather="arrow-left"></i> Back</button>
-                <h2>Privacy Policy</h2>
+        <!-- ======================= -->
+        <!--     SETTINGS VIEW       -->
+        <!-- ======================= -->
+        <div id="settings-view" class="view">
+            <main class="container">
+                <div class="page-header">
+                    <button class="back-btn" data-target-view="dashboard-view">
+                        <i data-feather="arrow-left"></i> Back
+                    </button>
+                    <h2>Settings</h2>
+                </div>
+
+                <!-- Account Information Section -->
+                <div class="settings-section glass-card">
+                    <h3>Account Information</h3>
+
+                    <!-- Username Setting Item -->
+                    <div class="setting-item editable">
+                        <span>Username</span>
+                        <div class="setting-value-wrapper">
+                            <!-- Display Mode -->
+                            <div class="display-mode active" id="username-display-mode">
+                                <span class="setting-value" id="setting-username-display"></span>
+                                <button class="btn-edit" id="edit-username-btn"><i data-feather="edit-2"></i></button>
+                            </div>
+                            <!-- Edit Mode (hidden by default) -->
+                            <div class="edit-mode" id="username-edit-mode">
+                                <input type="text" id="setting-username-input" class="setting-input">
+                                <button class="btn-save" id="save-username-btn"><i data-feather="check"></i></button>
+                                <button class="btn-cancel" id="cancel-username-btn"><i data-feather="x"></i></button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Email Setting Item -->
+                    <div class="setting-item editable">
+                        <span>Email</span>
+                        <div class="setting-value-wrapper">
+                            <!-- Display Mode -->
+                            <div class="display-mode active" id="email-display-mode">
+                                <span class="setting-value" id="setting-email-display"></span>
+                                <button class="btn-edit" id="edit-email-btn"><i data-feather="edit-2"></i></button>
+                            </div>
+                            <!-- Edit Mode (hidden by default) -->
+                            <div class="edit-mode" id="email-edit-mode">
+                                <input type="email" id="setting-email-input" class="setting-input">
+                                <button class="btn-save" id="save-email-btn"><i data-feather="check"></i></button>
+                                <button class="btn-cancel" id="cancel-email-btn"><i data-feather="x"></i></button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Read-only items -->
+                    <div class="setting-item">
+                        <span>Connected Telegram Account</span>
+                        <span class="setting-value" id="setting-phone-display">+1 234 567 8900</span>
+                    </div>
+                    <div class="setting-item">
+                        <span>Subscription Plan</span>
+                        <span class="setting-value" id="setting-plan-display">Pro Plan</span>
+                    </div>
+                </div>
+
+                <!-- Notification Preferences Section -->
+                <div class="settings-section glass-card">
+                    <h3>Notification Preferences</h3>
+                    <div class="setting-item">
+                        <span>New Important Messages</span>
+                        <label class="switch"><input type="checkbox" checked><span class="slider round"></span></label>
+                    </div>
+                    <div class="setting-item">
+                        <span>Weekly Summary</span>
+                        <label class="switch"><input type="checkbox"><span class="slider round"></span></label>
+                    </div>
+                </div>
+            </main>
+        </div>
+        <!-- At the bottom of index.html, before </body> -->
+
+        <!-- ======================= -->
+        <!--     PIN CODE MODAL      -->
+        <!-- ======================= -->
+        <div id="pin-modal-overlay" class="modal-overlay" style="display: none;">
+            <div id="pin-modal-content" class="login-container glass-card">
+                <img src="assets/autotuna-logo.png" alt="Autotuna Logo" class="logo"
+                    style="width: 120px; height: auto;">
+                <h1>Verification Required</h1>
+                <p>A code has been sent to your Telegram account. Please enter it to start the agent.</p>
+                <form id="modal-pin-form">
+                    <div class="input-group">
+                        <input type="text" name="telegram_pin_code" inputmode="numeric" placeholder="_ _ _ _ _" required
+                            style="text-align: center; font-size: 1.5em; letter-spacing: 0.5em;">
+                    </div>
+                    <div class="modal-buttons">
+                        <button type="button" id="modal-cancel-btn" class="btn btn-secondary">Cancel</button>
+                        <button type="button" id="modal-verify-btn" class="btn btn-primary">Verify & Start</button>
+                    </div>
+                </form>
             </div>
-            <div class="privacy-content glass-card">
-                <h3>1. Information We Collect</h3>
-                <p>We only collect information necessary to provide our service, such as your Telegram account
-                    identifier to fetch and respond to messages. We do not store your personal messages on our
-                    servers long-term. All message processing is done in real-time.</p>
-                <h3>2. How We Use Your Information</h3>
-                <p>Your information is used exclusively to power the Autotuna assistant. We do not sell, trade, or
-                    otherwise transfer your personally identifiable information to outside parties. This does not
-                    include trusted third parties who assist us in operating our service, so long as those parties
-                    agree to keep this information confidential.</p>
-            </div>
-        </main>
-    </div>
+        </div>
+
+        <div id="privacy-view" class="view">
+            <main class="container">
+                <div class="page-header"><button class="back-btn" data-target-view="dashboard-view"><i
+                            data-feather="arrow-left"></i> Back</button>
+                    <h2>Privacy Policy</h2>
+                </div>
+                <div class="privacy-content glass-card">
+                    <h3>1. Information We Collect</h3>
+                    <p>We only collect information necessary to provide our service, such as your Telegram account
+                        identifier to fetch and respond to messages. We do not store your personal messages on our
+                        servers long-term. All message processing is done in real-time.</p>
+                    <h3>2. How We Use Your Information</h3>
+                    <p>Your information is used exclusively to power the Autotuna assistant. We do not sell, trade, or
+                        otherwise transfer your personally identifiable information to outside parties. This does not
+                        include trusted third parties who assist us in operating our service, so long as those parties
+                        agree to keep this information confidential.</p>
+                </div>
+            </main>
+        </div>
 
 
     </div>
@@ -593,8 +591,12 @@
                     </div>
                 </div>
             </div>
+            <footer id="app-footer">
+        <p>Made with ❤️ by <a href="https://srot.dev" target="_blank">srot.dev</a></p>
+    </footer>
         </main>
     </div>
+    
 
     <script src="script.js"></script>
 </body>

@@ -2,38 +2,258 @@ document.addEventListener('DOMContentLoaded', () => {
     feather.replace();
 
     let messagePollingInterval = null;
-    let agentStartPollingInterval = null; // <-- ENSURE THIS LINE EXISTS
+    let agentStartPollingInterval = null;
     let updateAgentUI = () => { };
     let pollForAgentStart = () => { };
     let notificationPollingInterval = null;
     let isAutoReplyEnabled = false;
-    // =================================================
-    // --- 1. ALL BACKEND & HELPER FUNCTIONS ---
-    // =================================================
-    // In script.js
+
 
     // =================================================
     // --- 1. ALL BACKEND & HELPER FUNCTIONS ---
     // =================================================
+
+    async function createNotification(title, body) {
+        console.log(`Creating notification: "${title}"`);
+        const accessToken = localStorage.getItem('accessToken');
+        if (!accessToken) return;
+
+        const dotElement = document.querySelector('#notification-icon-wrapper .notification-dot');
+        if (dotElement) dotElement.classList.add('visible');
+
+        try {
+            const response = await fetch('https://emotuna-backend-production.up.railway.app/api/notifications/', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${accessToken}` },
+                body: JSON.stringify({ title, body })
+            });
+            if (response.ok) {
+                const notificationPanel = document.getElementById('notification-panel');
+                if (notificationPanel && notificationPanel.classList.contains('active')) {
+                    await handleFetchNotifications(); // Refresh if panel is open
+                }
+            } else {
+                if (dotElement) dotElement.classList.remove('visible');
+            }
+        } catch (error) {
+            if (dotElement) dotElement.classList.remove('visible');
+        }
+    }
+
+    /**
+ * Marks a single notification as read on the backend.
+ * @param {string} notificationId The ID of the notification to update.
+ * @returns {Promise<boolean>} True on success, false on failure.
+ */
+    async function handleMarkOneRead(notificationId) {
+        console.log(`Sending PATCH to mark notification ${notificationId} as read...`);
+        const accessToken = localStorage.getItem('accessToken');
+        if (!accessToken) return false;
+
+        try {
+            const response = await fetch(`https://emotuna-backend-production.up.railway.app/api/notifications/${notificationId}/`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${accessToken}`
+                },
+                body: JSON.stringify({ read: true })
+            });
+
+            if (response.ok) {
+                console.log(`Successfully marked notification ${notificationId} as read.`);
+                return true;
+            } else {
+                // If the response is not OK, something went wrong on the backend.
+                const errorData = await response.json();
+                throw new Error(JSON.stringify(errorData));
+            }
+        } catch (error) {
+            console.error("Failed to mark notification as read:", error);
+            alert(`Could not update the notification: ${error.message}`);
+            return false;
+        }
+    }
+
+    /**
+ * Marks all notifications as read on the backend.
+ * @returns {Promise<boolean>} True on success, false on failure.
+ */
+    /**
+ * Marks all notifications as read by fetching unread notifications
+ * and sending an individual PATCH request for each one.
+ * @returns {Promise<boolean>} True if all updates were successful, otherwise false.
+ */
+    async function handleMarkAllRead() {
+        console.log("Starting 'Mark All as Read' process...");
+        const accessToken = localStorage.getItem('accessToken');
+        if (!accessToken) return false;
+
+        try {
+            // Step 1: Fetch ALL notifications to identify the unread ones.
+            const response = await fetch('https://emotuna-backend-production.up.railway.app/api/notifications/', {
+                method: 'GET',
+                headers: { 'Authorization': `Bearer ${accessToken}` }
+            });
+
+            if (!response.ok) {
+                throw new Error("Could not fetch notifications to mark them as read.");
+            }
+
+            const allNotifications = await response.json();
+
+            // Step 2: Filter to find only the unread notifications that need updating.
+            const unreadNotifications = allNotifications.filter(n => n.read === false);
+
+            if (unreadNotifications.length === 0) {
+                console.log("No unread notifications to mark.");
+                return true; // Nothing to do, so it's a "success".
+            }
+
+            console.log(`Found ${unreadNotifications.length} unread notifications. Sending update requests...`);
+
+            // Step 3: Create an array of PATCH request promises, one for each unread notification.
+            const updatePromises = unreadNotifications.map(notification => {
+                return fetch(`https://emotuna-backend-production.up.railway.app/api/notifications/${notification.id}/`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${accessToken}`
+                    },
+                    body: JSON.stringify({ read: true })
+                });
+            });
+
+            // Step 4: Execute all the update requests in parallel and wait for them all to complete.
+            const responses = await Promise.all(updatePromises);
+
+            // Step 5: Check if any of the requests failed.
+            const allSucceeded = responses.every(res => res.ok);
+
+            if (!allSucceeded) {
+                console.error("One or more notifications failed to be marked as read.");
+                alert("Could not mark all notifications as read. Some may have failed.");
+            } else {
+                console.log("All notifications successfully marked as read.");
+            }
+
+            return allSucceeded;
+
+        } catch (error) {
+            console.error("Error during 'Mark All as Read' process:", error);
+            alert("An error occurred while marking notifications as read.");
+            return false;
+        }
+    }
+    /**
+ * Deletes a single notification from the backend.
+ * @param {string} notificationId The ID of the notification to delete.
+ * @returns {Promise<boolean>} True on success, false on failure.
+ */
+    async function handleDeleteOne(notificationId) {
+        console.log(`Deleting notification ${notificationId}...`);
+        const accessToken = localStorage.getItem('accessToken');
+        if (!accessToken) return false;
+
+        try {
+            const response = await fetch(`https://emotuna-backend-production.up.railway.app/api/notifications/${notificationId}/`, {
+                method: 'DELETE',
+                headers: { 'Authorization': `Bearer ${accessToken}` }
+            });
+            return response.ok;
+        } catch (error) {
+            console.error("Failed to delete notification:", error);
+            alert("Could not delete the notification. Please check your connection.");
+            return false;
+        }
+    }
+
+    /**
+  * Deletes all notifications for the user by fetching the full list
+  * and sending an individual DELETE request for each one.
+  * @returns {Promise<boolean>} True if all deletions were successful, otherwise false.
+  */
+    async function handleDeleteAll() {
+        console.log("Starting 'Delete All' process...");
+        const accessToken = localStorage.getItem('accessToken');
+        if (!accessToken) {
+            alert("Authentication error.");
+            return false;
+        }
+
+        try {
+            // Step 1: Fetch the list of ALL notifications to get their IDs.
+            const response = await fetch('https://emotuna-backend-production.up.railway.app/api/notifications/', {
+                method: 'GET',
+                headers: { 'Authorization': `Bearer ${accessToken}` }
+            });
+
+            if (!response.ok) {
+                throw new Error("Could not fetch notifications to delete them.");
+            }
+
+            const allNotifications = await response.json();
+
+            if (allNotifications.length === 0) {
+                console.log("No notifications to delete.");
+                return true; // Nothing to do, so consider it a success.
+            }
+
+            console.log(`Found ${allNotifications.length} notifications to delete. Sending requests...`);
+
+            // Step 2: Create an array of DELETE request promises, one for each notification.
+            const deletePromises = allNotifications.map(notification => {
+                return fetch(`https://emotuna-backend-production.up.railway.app/api/notifications/${notification.id}/`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${accessToken}` }
+                });
+            });
+
+            // Step 3: Execute all delete requests in parallel and wait for them to complete.
+            const responses = await Promise.all(deletePromises);
+
+            // Step 4: Check if any of the requests failed.
+            const allSucceeded = responses.every(res => res.ok);
+
+            if (!allSucceeded) {
+                console.error("One or more notifications failed to be deleted.");
+                alert("Could not delete all notifications. Some may have failed.");
+            } else {
+                console.log("All notifications successfully deleted.");
+            }
+
+            return allSucceeded;
+
+        } catch (error) {
+            console.error("Error during 'Delete All' process:", error);
+            alert("An error occurred while deleting notifications.");
+            return false;
+        }
+    }
+
     function createNotificationHTML(notification) {
         const isUnread = !notification.read;
         const icon = isUnread ? 'bell' : 'check-circle';
 
         return `
-        <div class="notification-item ${isUnread ? 'unread' : ''}" data-id="${notification.id}">
-            <div class="notification-icon"><i data-feather="${icon}"></i></div>
-            <div class="notification-content">
-                <span class="title">${notification.title || 'Notification'}</span>
-                <span class="body">${notification.body || ''}</span>
-                <span class="time">${new Date(notification.timestamp).toLocaleString()}</span>
-            </div>
-        </div>`;
+    <div class="notification-item ${isUnread ? 'unread' : ''}" data-id="${notification.id}">
+        <div class="notification-icon"><i data-feather="${icon}"></i></div>
+        <div class="notification-content">
+            <span class="title">${notification.title || 'Notification'}</span>
+            <p class="body">${notification.body || ''}</p>
+            <span class="time">${new Date(notification.timestamp).toLocaleString()}</span>
+        </div>
+        <div class="notification-item-actions">
+            ${isUnread ? `<button class="btn-action btn-mark-read" title="Mark as Read"><i data-feather="check"></i></button>` : ''}
+            <button class="btn-action btn-delete" title="Delete"><i data-feather="trash-2"></i></button>
+        </div>
+    </div>`;
     }
 
     /**
  * Updates the user's auto-reply status on the backend.
- * @param {boolean} isEnabled - The new status for auto-reply.
- * @returns {Promise<boolean>} True if the update was successful, otherwise false.
+ * @param {boolean} isEnabled
+ * @returns {Promise<boolean>} 
  */
     async function handleUpdateAutoReplyStatus(isEnabled) {
         console.log(`Setting auto-reply status to: ${isEnabled}`);
@@ -67,7 +287,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     /**
      * Creates the HTML string for a single history card item.
-     * This version is simpler as it's not interactive.
+    
      */
     function createHistoryCardHTML(msg) {
         const sentimentClass = msg.sentiment ? `sentiment-${msg.sentiment.toLowerCase()}` : 'sentiment-neutral';
@@ -107,7 +327,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const accessToken = localStorage.getItem('accessToken');
             if (!accessToken) throw new Error("Authentication error.");
 
-            // --- THIS IS THE KEY CHANGE: reply_sent=true ---
+
             const response = await fetch(`https://emotuna-backend-production.up.railway.app/api/messages/?reply_sent=true`, {
                 method: 'GET',
                 headers: { 'Authorization': `Bearer ${accessToken}` }
@@ -140,15 +360,15 @@ document.addEventListener('DOMContentLoaded', () => {
  * Starts a background loop to periodically check for new notifications.
  */
     function startNotificationPolling() {
-        stopNotificationPolling(); // Prevent multiple loops
+        stopNotificationPolling();
         console.log("Starting notification polling (checking every 30 seconds)...");
 
-        // Check immediately when starting
+
         handleFetchNotifications();
 
         notificationPollingInterval = setInterval(() => {
             handleFetchNotifications();
-        }, 30000); // Check for new notifications every 30 seconds
+        }, 30000);
     }
 
     /**
@@ -165,7 +385,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const accessToken = localStorage.getItem('accessToken');
         if (!accessToken) return null;
         try {
-            // This assumes your /api/profile/ endpoint returns the training status
+
             const response = await fetch('https://emotuna-backend-production.up.railway.app/api/profile/', {
                 method: 'GET',
                 headers: { 'Authorization': `Bearer ${accessToken}` }
@@ -179,17 +399,38 @@ document.addEventListener('DOMContentLoaded', () => {
             return null;
         }
     }
+
+    /**
+ * Decodes the payload of a JWT token.
+ * Does not verify the signature.
+ * @param {string} token - The JWT token.
+ * @returns {object|null} The decoded payload object or null if parsing fails.
+ */
+    function parseJwt(token) {
+        if (!token) { return null; }
+        try {
+            const base64Url = token.split('.')[1];
+            const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+            const jsonPayload = decodeURIComponent(atob(base64).split('').map(function (c) {
+                return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+            }).join(''));
+            return JSON.parse(jsonPayload);
+        } catch (e) {
+            console.error("Failed to parse JWT token:", e);
+            return null;
+        }
+    }
     /**
  * Creates a new notification. Sends it to the backend to be saved
  * and updates the UI to show that a new notification exists.
- * @param {string} title - The title of the notification.
- * @param {string} body - The main content/body of the notification.
+ * @param {string} title 
+ * @param {string} body 
  */
     /**
  * Creates a new notification. Sends it to the backend to be saved
  * and updates the UI to show that a new notification exists.
- * @param {string} title - The title of the notification.
- * @param {string} body - The main content/body of the notification.
+ * @param {string} title 
+ * @param {string} body
  */
 
 
@@ -214,8 +455,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const accessToken = localStorage.getItem('accessToken');
         if (!accessToken) return false;
         try {
-            // NOTE: This assumes a backend endpoint that can report the PIN status.
-            // It might be the same as agent-status, or a dedicated one.
+
+
             // It should return something like: { "pin_required": true }
             const response = await fetch('https://emotuna-backend-production.up.railway.app/api/agent-status/', {
                 method: 'GET',
@@ -252,13 +493,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function handleUpdateUserProfile(dataToUpdate) {
         const accessToken = localStorage.getItem('accessToken');
+        const userId = localStorage.getItem('userId');
+
+        // --- NEW, MORE SPECIFIC ERROR CHECKING ---
         if (!accessToken) {
-            alert("Authentication error. Please log in again.");
-            return false; // Failure
+            alert("Authentication error: Access Token is missing. Please log in again.");
+            return false;
+        }
+        if (!userId) {
+            alert("Critical error: User ID is missing. Please log in again to restore it.");
+            return false;
         }
 
         try {
-            const response = await fetch('https://emotuna-backend-production.up.railway.app/api/profile/', {
+            const response = await fetch(`https://emotuna-backend-production.up.railway.app/api/profile/`, {
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json',
@@ -268,23 +516,22 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
             if (response.ok) {
-                // The backend successfully processed the request.
                 alert("Profile updated successfully!");
-                return true; // Explicitly return true on success
+                return true;
             } else {
-                // The backend processed the request but found an error (e.g., validation).
                 const errorData = await response.json();
-                const errorMessage = Object.values(errorData).flat().join('\n'); // Nicely format validation errors
+                const errorMessage = Object.values(errorData).flat().join('\n');
                 alert(`Update failed: ${errorMessage}`);
-                return false; // Explicitly return false on failure
+                return false;
             }
         } catch (error) {
-            // A network or other unexpected error occurred.
             console.error("Error during profile update:", error);
-            alert("An error occurred while updating your profile. Please check the console.");
-            return false; // Explicitly return false on failure
+            alert("An error occurred while updating your profile.");
+            return false;
         }
     }
+
+
     function logout() {
         localStorage.clear();
         if (messagePollingInterval) clearInterval(messagePollingInterval);
@@ -414,33 +661,55 @@ document.addEventListener('DOMContentLoaded', () => {
         const loginData = Object.fromEntries(formData.entries());
         submitButton.disabled = true;
         submitButton.textContent = 'Logging In...';
+
         try {
             const response = await fetch('https://emotuna-backend-production.up.railway.app/api/login/', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(loginData)
             });
+
             const result = await response.json();
+
             if (response.ok) {
-                // Set the session credentials
-                localStorage.setItem('accessToken', result.access);
-                localStorage.setItem('refreshToken', result.refresh);
-                localStorage.setItem('username', result.username);
-                localStorage.setItem('isFullyOnboarded', result.is_onboarded === true);
+                const accessToken = result.access;
+                if (!accessToken) {
+                    // This should never happen if login is successful, but it's a good safety check.
+                    throw new Error("Login succeeded but did not provide an access token.");
+                }
 
-                // --- THIS IS THE CRITICAL FIX ---
-                // Instead of reloading, we now call the central router.
-                // initializeApp will read the new localStorage values and show the correct view.
-                initializeApp();
+                // --- THIS IS THE CRITICAL LOGIC ---
+                const tokenPayload = parseJwt(accessToken); // Assuming parseJwt function exists
+                const userId = tokenPayload ? tokenPayload.user_id : null;
 
-                return result; // Still return the user data
+                console.log("--- Login Successful ---");
+                console.log("Access Token received:", accessToken ? "Yes" : "No");
+                console.log("Token Payload:", tokenPayload);
+                console.log("Extracted User ID:", userId);
+
+                if (userId) {
+                    // Save all credentials
+                    localStorage.setItem('accessToken', accessToken);
+                    localStorage.setItem('refreshToken', result.refresh);
+                    localStorage.setItem('username', result.username);
+                    localStorage.setItem('userId', userId); // <-- Save the extracted ID
+                    localStorage.setItem('isFullyOnboarded', result.is_onboarded === true);
+
+                    console.log("Saved userId to localStorage:", localStorage.getItem('userId'));
+
+                    // Proceed with app initialization
+                    initializeApp();
+                    return result;
+                } else {
+                    throw new Error("Could not extract user_id from the authentication token.");
+                }
             } else {
                 const errorMessage = result.detail || JSON.stringify(result);
                 alert(`Login failed: ${errorMessage}`);
                 return null;
             }
         } catch (error) {
-            alert('Could not connect to the server.');
+            alert(`Login failed: ${error.message}`);
             return null;
         } finally {
             submitButton.disabled = false;
@@ -736,9 +1005,15 @@ document.addEventListener('DOMContentLoaded', () => {
         const listElement = document.getElementById('notification-list');
         const dotElement = document.querySelector('#notification-icon-wrapper .notification-dot');
         const panelElement = document.getElementById('notification-panel');
+        const headerElement = panelElement ? panelElement.querySelector('.dropdown-header') : null;
+        const footerElement = panelElement ? panelElement.querySelector('#notification-footer') : null;
 
-        // Silently exit if the elements aren't on the page
-        if (!listElement || !dotElement || !panelElement) return;
+        if (!listElement || !dotElement || !panelElement || !headerElement || !footerElement) return;
+
+        // Only show loading state if the panel is currently open
+        if (panelElement.classList.contains('active')) {
+            listElement.innerHTML = `<p class="loading-state">Loading notifications...</p>`;
+        }
 
         try {
             const accessToken = localStorage.getItem('accessToken');
@@ -750,8 +1025,10 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
             if (!response.ok) {
-                // Silently fail on polling, don't alert the user every time
                 console.error(`Failed to fetch notifications: ${response.status}`);
+                if (panelElement.classList.contains('active')) {
+                    listElement.innerHTML = `<p class="error-state">Could not load notifications.</p>`;
+                }
                 return;
             }
 
@@ -763,14 +1040,27 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Only update the list if the panel is actually open
             if (panelElement.classList.contains('active')) {
-                listElement.innerHTML = ''; // Clear the list
+                listElement.innerHTML = '';
+
                 if (notifications.length > 0) {
+                    // If there ARE notifications, show the header and footer
+                    headerElement.style.display = 'flex';
+                    footerElement.style.display = 'block';
                     notifications.forEach(notif => {
-                        const notifHTML = createNotificationHTML(notif); // Assuming this function exists
+                        const notifHTML = createNotificationHTML(notif);
                         listElement.insertAdjacentHTML('beforeend', notifHTML);
                     });
                 } else {
-                    listElement.innerHTML = `<p class="empty-state">You have no notifications.</p>`;
+                    // If there are NO notifications, hide the header and footer
+                    headerElement.style.display = 'none';
+                    footerElement.style.display = 'none';
+                    listElement.innerHTML = `
+                    <div class="empty-notification-state">
+                        <i data-feather="check-circle"></i>
+                        <h4>All Caught Up</h4>
+                        <p>You have no new notifications.</p>
+                    </div>
+                `;
                 }
                 feather.replace();
             }
@@ -952,7 +1242,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (status === 'completed') {
                         // SUCCESS: Stop polling and notify the user.
                         clearInterval(trainingPollInterval);
-                        //await createNotification("Training Complete", "Your self-trained model is now ready to be used.");
+                        await createNotification("Training Complete", "Your self-trained model is now ready to be used.");
 
                         // Optional: You could send another PATCH request here to set the
                         // backend status back to 'idle' so the user isn't notified again.
@@ -1086,7 +1376,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (newMessagesFound) {
                 const newestMessageId = filteredMessages.length > 0 ? filteredMessages[0].id : null;
                 if (newestMessageId && !window.notifiedMessageIds.has(newestMessageId)) {
-                    //await createNotification("New Message Received", `You have new messages in the '${category}' category.`);
+                    await createNotification("New Message Received", `You have new messages in the '${category}' category.`);
                     window.notifiedMessageIds.add(newestMessageId);
                 }
             }
@@ -1449,41 +1739,43 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log("--- Setting up Dashboard ---");
 
         // --- 1. FIND ALL ELEMENTS ---
-        // Centralized lookup for all elements used within the dashboard.
-        const uploadDataBtn = document.getElementById('upload-data-btn');
-        const downloadDataBtn = document.getElementById('download-data-btn');
-        const trainModelBtn = document.getElementById('train-model-btn');
-        const fileUploadInput = document.getElementById('file-upload-input');
         const agentStarter = document.getElementById('agent-starter');
         const agentChoice = document.getElementById('agent-choice');
         const agentStarting = document.getElementById('agent-starting');
         const agentActive = document.getElementById('agent-active');
+        const messagesContainer = document.getElementById('messages-container');
         const runAgentBtn = document.getElementById('run-agent-btn');
         const agentModelBtns = document.querySelectorAll('.agent-model-btn');
         const stopAgentBtn = document.getElementById('stop-agent-btn');
-        const messagesContainer = document.getElementById('messages-container');
         const messageList = document.getElementById('message-list');
         const tabs = document.querySelectorAll('.message-tabs .tab-btn');
-        const profileDropdown = document.getElementById('profile-dropdown');
-        const notificationPanel = document.getElementById('notification-panel');
         const navRight = document.querySelector('.nav-right');
         const historyIcon = document.getElementById('history-icon');
         const backBtns = document.querySelectorAll('.back-btn');
         const settingsView = document.getElementById('settings-view');
+        const profileDropdown = document.getElementById('profile-dropdown');
+        const notificationPanel = document.getElementById('notification-panel');
+        const autoDmToggle = document.getElementById('auto-dm-toggle');
+        const uploadDataBtn = document.getElementById('upload-data-btn');
+        const downloadDataBtn = document.getElementById('download-data-btn');
+        const trainModelBtn = document.getElementById('train-model-btn');
+        const fileUploadInput = document.getElementById('file-upload-input');
 
-        // --- 2. DEFINE ALL DASHBOARD-SCOPED HELPER FUNCTIONS ---
-
-        // Assigns the main UI controller to the global variable
+        // --- 2. DEFINE HELPERS ---
         updateAgentUI = (state) => {
-            if (!agentStarter || !agentChoice || !agentStarting || !agentActive || !messagesContainer) {
-                console.error("One or more agent UI elements are missing from the DOM.");
-                return;
-            }
-            agentStarter.style.display = (state === 'stopped') ? 'flex' : 'none';
+            if (!agentStarter || !agentChoice || !agentStarting || !agentActive || !messagesContainer) return;
+            agentStarter.style.display = 'none';
             agentChoice.style.display = 'none';
-            agentStarting.style.display = (state === 'starting') ? 'flex' : 'none';
-            agentActive.style.display = (state === 'running') ? 'flex' : 'none';
-            messagesContainer.style.display = (state === 'running') ? 'block' : 'none';
+            agentStarting.style.display = 'none';
+            agentActive.style.display = 'none';
+            messagesContainer.style.display = 'none';
+            if (state === 'stopped') agentStarter.style.display = 'flex';
+            else if (state === 'choosing') agentChoice.style.display = 'flex';
+            else if (state === 'starting') agentStarting.style.display = 'flex';
+            else if (state === 'running') {
+                agentActive.style.display = 'flex';
+                messagesContainer.style.display = 'block';
+            }
         };
 
         pollForAgentStart = () => {
@@ -1493,7 +1785,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 alert("Agent failed to start within the time limit.");
                 updateAgentUI('stopped');
             }, 35000);
-
             agentStartPollingInterval = setInterval(async () => {
                 const isRunning = await checkAgentStatus();
                 if (isRunning) {
@@ -1501,30 +1792,28 @@ document.addEventListener('DOMContentLoaded', () => {
                     clearTimeout(startupTimeout);
                     localStorage.setItem('agentIsRunning', 'true');
                     updateAgentUI('running');
-                    //await createNotification("Agent Started", "Your AI agent is now running and monitoring messages.");
+                    await createNotification("Agent Started", "Your AI agent is now running and monitoring messages.");
                     const lastActiveTab = localStorage.getItem('lastActiveTab') || 'important';
                     await handleFetchMessages(lastActiveTab, messageList);
                     startMessagePolling(messageList);
-
+                    startNotificationPolling();
                 }
             }, 5000);
         };
 
-        const switchDashboardView = async (viewId) => {
+        const switchDashboardView = (viewId) => {
             const subViews = ['dashboard-view', 'history-view', 'settings-view', 'privacy-view', 'about-us-view'];
             subViews.forEach(id => {
                 const el = document.getElementById(id);
                 if (el) el.classList.remove('active');
             });
-
             if (viewId === 'settings-view') {
-                const userData = await handleFetchUserProfile();
-                if (userData) populateSettingsForm(userData);
+                handleFetchUserProfile().then(userData => {
+                    if (userData) populateSettingsForm(userData);
+                });
             } else if (viewId === 'history-view') {
-                // When switching to the history view, fetch the history.
-                await handleFetchHistory();
+                handleFetchHistory();
             }
-
             const target = document.getElementById(viewId);
             if (target) target.classList.add('active');
             feather.replace();
@@ -1535,7 +1824,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const emailDisplay = document.getElementById('setting-email-display');
             const phoneDisplay = document.getElementById('setting-phone-display');
             const planDisplay = document.getElementById('setting-plan-display');
-
             if (usernameDisplay) usernameDisplay.textContent = data.username || 'N/A';
             if (emailDisplay) emailDisplay.textContent = data.email || 'N/A';
             if (phoneDisplay) phoneDisplay.textContent = data.telegram_mobile_number || 'N/A';
@@ -1547,7 +1835,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const editMode = document.getElementById(`${field}-edit-mode`);
             const input = document.getElementById(`setting-${field}-input`);
             const display = document.getElementById(`setting-${field}-display`);
-
             if (isEditing) {
                 if (input && display) input.value = display.textContent;
                 if (displayMode) displayMode.classList.remove('active');
@@ -1559,13 +1846,62 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         };
 
-        // --- 3. GET INITIAL STATE BEFORE ATTACHING LISTENERS ---
-        console.log("Checking initial agent status from backend...");
+        // --- 3. GET INITIAL STATE ---
         const isAgentRunning = await checkAgentStatus();
         localStorage.setItem('agentIsRunning', isAgentRunning);
-        console.log(`Backend reports agent is running: ${isAgentRunning}`);
 
-        // --- 4. ATTACH ALL EVENT LISTENERS ---
+        // --- 4. ATTACH LISTENERS (SINGLE, CLEAN SET) ---
+        if (runAgentBtn) runAgentBtn.addEventListener('click', () => updateAgentUI('choosing'));
+        agentModelBtns.forEach(btn => btn.addEventListener('click', () => handleRunAgent(btn.dataset.model, btn)));
+
+        if (stopAgentBtn) stopAgentBtn.addEventListener('click', async (e) => {
+            if (agentStartPollingInterval) clearInterval(agentStartPollingInterval);
+            const success = await handleStopAgent(e.target.closest('button'));
+            if (success) {
+                updateAgentUI('stopped');
+                stopMessagePolling();
+                stopNotificationPolling();
+            }
+        });
+
+        if (tabs) tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                tabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                const category = tab.dataset.category;
+                localStorage.setItem('lastActiveTab', category);
+                handleFetchMessages(category, messageList);
+            });
+        });
+
+        if (messageList) messageList.addEventListener('click', async (e) => {
+            const sendButton = e.target.closest('.btn-approve-send');
+            if (!sendButton) return;
+            const messageCard = e.target.closest('.message-card');
+            if (!messageCard) return;
+            const success = await handleApproveAndSend(messageCard.dataset.messageId, messageCard);
+            if (success) {
+                const interactionArea = messageCard.querySelector('.interaction-area');
+                const aiReplySection = messageCard.querySelector('.ai-reply-section');
+                if (interactionArea) interactionArea.remove();
+                if (aiReplySection) {
+                    aiReplySection.insertAdjacentHTML('beforeend', `<div class="confirmation-message"><i data-feather="check-circle"></i><span>Reply Sent!</span></div>`);
+                    feather.replace();
+                }
+                setTimeout(() => {
+                    messageCard.classList.add('fading-out');
+                    setTimeout(() => {
+                        messageCard.remove();
+                        if (messageList.children.length === 0) {
+                            messageList.innerHTML = `<p class="empty-state">No pending messages in this category.</p>`;
+                        }
+                    }, 500);
+                }, 2000);
+            }
+        });
+
+        if (historyIcon) historyIcon.addEventListener('click', () => switchDashboardView('history-view'));
+        if (backBtns) backBtns.forEach(btn => btn.addEventListener('click', () => switchDashboardView(btn.dataset.targetView)));
 
         if (uploadDataBtn) uploadDataBtn.addEventListener('click', () => fileUploadInput.click());
         if (fileUploadInput) fileUploadInput.addEventListener('change', (e) => {
@@ -1573,193 +1909,146 @@ document.addEventListener('DOMContentLoaded', () => {
             if (file) handleUploadData(file, uploadDataBtn);
             e.target.value = null;
         });
-
         if (downloadDataBtn) downloadDataBtn.addEventListener('click', (e) => handleDownloadData(e.target.closest('button')));
         if (trainModelBtn) trainModelBtn.addEventListener('click', (e) => handleRequestTraining(e.target.closest('button')));
 
-        if (runAgentBtn) {
-            runAgentBtn.addEventListener('click', () => {
-                agentStarter.style.display = 'none';
-                agentChoice.style.display = 'flex';
-            });
-        }
+        if (autoDmToggle) autoDmToggle.addEventListener('change', async () => {
+            const newIsEnabledState = autoDmToggle.checked;
+            autoDmToggle.disabled = true;
+            const success = await handleUpdateAutoReplyStatus(newIsEnabledState);
+            if (success) {
+                isAutoReplyEnabled = newIsEnabledState;
+            } else {
+                autoDmToggle.checked = isAutoReplyEnabled;
+            }
+            autoDmToggle.disabled = false;
+        });
 
+        if (profileDropdown) profileDropdown.addEventListener('click', (e) => {
+            const item = e.target.closest('.dropdown-item');
+            if (!item) return;
+            e.stopPropagation();
+            if (item.id === 'logout-btn') return logout();
+            if (item.dataset.targetView) {
+                switchDashboardView(item.dataset.targetView);
+                profileDropdown.classList.remove('active');
+            }
+        });
 
-
-        if (stopAgentBtn) {
-            stopAgentBtn.addEventListener('click', async (e) => {
-                if (agentStartPollingInterval) clearInterval(agentStartPollingInterval);
-                const success = await handleStopAgent(e.target.closest('button'));
+        if (notificationPanel) notificationPanel.addEventListener('click', async (e) => {
+            e.stopPropagation();
+            const notificationItem = e.target.closest('.notification-item');
+            const notificationId = notificationItem ? notificationItem.dataset.id : null;
+            if (e.target.closest('.btn-mark-read')) {
+                const success = await handleMarkOneRead(notificationId);
                 if (success) {
-                    updateAgentUI('stopped');
-                    stopMessagePolling();
-                }
-            });
-        }
-
-        if (tabs) {
-            tabs.forEach(tab => {
-                tab.addEventListener('click', () => {
-                    tabs.forEach(t => t.classList.remove('active'));
-                    tab.classList.add('active');
-                    const category = tab.dataset.category;
-                    localStorage.setItem('lastActiveTab', category);
-                    handleFetchMessages(category, messageList);
-                });
-            });
-        }
-
-        if (messageList) {
-            messageList.addEventListener('click', async (e) => {
-                if (e.target.closest('.btn-approve-send')) {
-                    const messageCard = e.target.closest('.message-card');
-                    if (messageCard) {
-                        const success = await handleApproveAndSend(messageCard.dataset.messageId, messageCard);
-                        if (success) {
-                            messageCard.style.opacity = '0';
-                            setTimeout(() => messageCard.remove(), 500);
-                        }
+                    const iconContainer = notificationItem.querySelector('.notification-icon');
+                    if (iconContainer) {
+                        iconContainer.innerHTML = `<i data-feather="check-circle"></i>`;
                     }
+                    notificationItem.classList.remove('unread');
+                    notificationItem.style.opacity = '0.7';
+                    e.target.closest('.btn-mark-read').remove();
+                    feather.replace();
+                    handleFetchNotifications();
                 }
-            });
-        }
-
-        if (historyIcon) historyIcon.addEventListener('click', () => switchDashboardView('history-view'));
-        if (backBtns) backBtns.forEach(btn => btn.addEventListener('click', () => switchDashboardView(btn.dataset.targetView)));
-
-        if (profileDropdown) {
-            profileDropdown.addEventListener('click', (e) => {
-                const item = e.target.closest('.dropdown-item');
-                if (!item) return;
-                if (item.id === 'logout-btn') {
-                    e.preventDefault();
-                    logout();
-                    return;
-                }
-                if (item.dataset.targetView) {
-                    switchDashboardView(item.dataset.targetView);
-                    profileDropdown.classList.remove('active');
-                }
-            });
-        }
-
-        if (settingsView) {
-            settingsView.addEventListener('click', async (e) => {
-                const target = e.target.closest('button');
-                if (!target) return;
-
-                if (target.id === 'edit-username-btn') toggleEditMode('username', true);
-                if (target.id === 'cancel-username-btn') toggleEditMode('username', false);
-                if (target.id === 'save-username-btn') {
-                    const newUsername = document.getElementById('setting-username-input').value;
-                    const success = await handleUpdateUserProfile({ username: newUsername });
+            } else if (e.target.closest('.btn-delete')) {
+                if (confirm('Delete this notification?')) {
+                    const success = await handleDeleteOne(notificationId);
                     if (success) {
-                        document.getElementById('setting-username-display').textContent = newUsername;
-                        toggleEditMode('username', false);
+                        notificationItem.style.transition = 'opacity 0.3s, max-height 0.3s, padding 0.3s, margin 0.3s, border 0.3s';
+                        notificationItem.style.opacity = '0';
+                        notificationItem.style.maxHeight = '0';
+                        notificationItem.style.padding = '0';
+                        notificationItem.style.margin = '0';
+                        notificationItem.style.borderWidth = '0';
+                        setTimeout(() => {
+                            notificationItem.remove();
+                            if (document.getElementById('notification-list').children.length === 0) handleFetchNotifications();
+                        }, 300);
                     }
                 }
-                if (target.id === 'edit-email-btn') toggleEditMode('email', true);
-                if (target.id === 'cancel-email-btn') toggleEditMode('email', false);
-                if (target.id === 'save-email-btn') {
-                    const newEmail = document.getElementById('setting-email-input').value;
-                    const success = await handleUpdateUserProfile({ email: newEmail });
-                    if (success) {
-                        document.getElementById('setting-email-display').textContent = newEmail;
-                        toggleEditMode('email', false);
-                    }
+            } else if (e.target.closest('#mark-all-read-btn')) {
+                const success = await handleMarkAllRead();
+                if (success) handleFetchNotifications();
+            } else if (e.target.closest('#delete-all-btn')) {
+                if (confirm('Are you sure you want to delete ALL notifications?')) {
+                    const success = await handleDeleteAll();
+                    if (success) handleFetchNotifications();
                 }
-            });
-        }
+            }
+        });
+
+        if (settingsView) settingsView.addEventListener('click', async (e) => {
+            const target = e.target.closest('button');
+            if (!target) return;
+            if (target.id === 'edit-username-btn') toggleEditMode('username', true);
+            if (target.id === 'cancel-username-btn') toggleEditMode('username', false);
+            if (target.id === 'save-username-btn') {
+                const newUsername = document.getElementById('setting-username-input').value;
+                const success = await handleUpdateUserProfile({ username: newUsername });
+                if (success) {
+                    document.getElementById('setting-username-display').textContent = newUsername;
+                    toggleEditMode('username', false);
+                }
+            }
+            if (target.id === 'edit-email-btn') toggleEditMode('email', true);
+            if (target.id === 'cancel-email-btn') toggleEditMode('email', false);
+            if (target.id === 'save-email-btn') {
+                const newEmail = document.getElementById('setting-email-input').value;
+                const success = await handleUpdateUserProfile({ email: newEmail });
+                if (success) {
+                    document.getElementById('setting-email-display').textContent = newEmail;
+                    toggleEditMode('email', false);
+                }
+            }
+        });
 
         if (navRight) {
-            let hasFetchedInitialToggleState = false; // Flag to prevent re-fetching
-
             navRight.addEventListener('click', async (e) => {
                 const wrapper = e.target.closest('.nav-icon-wrapper');
-                if (!wrapper) return;
-
+                if (!wrapper || !wrapper.id) return;
                 e.stopPropagation();
-
-                const profileDropdown = document.getElementById('profile-dropdown');
-                const notificationPanel = document.getElementById('notification-panel');
-
                 if (wrapper.id === 'profile-icon-wrapper') {
-                    if (notificationPanel) notificationPanel.classList.remove('active');
+                    notificationPanel.classList.remove('active');
                     const isActive = profileDropdown.classList.toggle('active');
-
-                    // --- THIS IS THE FIX ---
-                    // Fetch the initial state ONLY the very first time the dropdown is opened.
-                    if (isActive && !hasFetchedInitialToggleState) {
-                        const autoDmToggle = document.getElementById('auto-dm-toggle');
-                        if (autoDmToggle) {
-                            autoDmToggle.addEventListener('change', async () => {
-                                const newIsEnabledState = autoDmToggle.checked;
-                                autoDmToggle.disabled = true;
-
-                                const success = await handleUpdateAutoReplyStatus(newIsEnabledState);
-
-                                if (success) {
-                                    // --- THIS IS THE FIX ---
-                                    // If the backend update succeeds, update our local state variable.
-                                    isAutoReplyEnabled = newIsEnabledState;
-                                } else {
-                                    // If the backend update failed, revert the toggle and the local state.
-                                    autoDmToggle.checked = isAutoReplyEnabled; // Revert to the last known good state
-                                }
-
-                                autoDmToggle.disabled = false;
-                            });
+                    if (isActive) {
+                        const userData = await handleFetchUserProfile();
+                        if (userData && autoDmToggle) {
+                            isAutoReplyEnabled = userData.agent_auto_reply === true;
+                            autoDmToggle.checked = isAutoReplyEnabled;
                         }
                     }
-                }
-
-                if (wrapper.id === 'notification-icon-wrapper') {
-                    if (profileDropdown) profileDropdown.classList.remove('active');
+                } else if (wrapper.id === 'notification-icon-wrapper') {
+                    profileDropdown.classList.remove('active');
                     const isActive = notificationPanel.classList.toggle('active');
-                    if (isActive) {
-                        handleFetchNotifications();
-                    }
+                    if (isActive) handleFetchNotifications();
                 }
-
-                feather.replace();
             });
         }
-        agentModelBtns.forEach(btn => {
-            btn.addEventListener('click', () => {
-                const selectedModel = btn.dataset.model;
-                // The new handleRunAgent now controls the entire flow.
-                handleRunAgent(selectedModel, btn);
-            });
-        });
-        window.addEventListener('click', (e) => {
-            const profileDropdown = document.getElementById('profile-dropdown');
-            const notificationPanel = document.getElementById('notification-panel');
 
-            // If the click was outside of the navRight area, close both dropdowns
-            if (navRight && !navRight.contains(e.target)) {
+        window.addEventListener('click', (e) => {
+            if (!e.target.closest('#profile-icon-wrapper')) {
                 if (profileDropdown) profileDropdown.classList.remove('active');
+            }
+            if (!e.target.closest('#notification-icon-wrapper')) {
                 if (notificationPanel) notificationPanel.classList.remove('active');
             }
         });
 
-        // --- 5. SET FINAL UI STATE AND FETCH DATA ---
-
+        // --- 5. SET FINAL UI STATE ---
         if (isAgentRunning) {
             updateAgentUI('running');
-            console.log("Agent is running. Fetching initial messages...");
-            const lastActiveTab = localStorage.getItem('lastActiveTab') || 'important';
-            tabs.forEach(tab => tab.classList.toggle('active', tab.dataset.category === lastActiveTab));
-            await handleFetchMessages(lastActiveTab, messageList);
             startMessagePolling(messageList);
             startNotificationPolling();
+            const lastActiveTab = localStorage.getItem('lastActiveTab') || 'important';
+            tabs.forEach(tab => tab.classList.toggle('active', tab.dataset.category === lastActiveTab));
+            handleFetchMessages(lastActiveTab, messageList);
         } else {
             updateAgentUI('stopped');
-            stopMessagePolling();         // <-- ADD THIS LINE
-            stopNotificationPolling();
-            console.log("Agent is stopped. Waiting for user action.");
         }
 
-        switchDashboardView('dashboard-view'); // Ensure dashboard is the default view
+        switchDashboardView('dashboard-view');
         console.log("--- Dashboard setup complete ---");
     }
     // ===========================================

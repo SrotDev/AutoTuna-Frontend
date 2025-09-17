@@ -74,9 +74,9 @@ body {
 
 
 .login-container {
-    max-width: 420px;
+    max-width: 550px;
     width: 100%;
-    padding: 50px 40px;
+    padding: 5rem;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -98,6 +98,7 @@ body {
     margin-top: -5px;
     margin-bottom: 20px;
     text-align: center;
+
 }
 
 .login-container .input-group {
@@ -128,15 +129,33 @@ body {
 }
 
 
-.login-container .btn-primary {
-    width: 100%;
-    padding: 14px;
 
-    background-color: #f0f0f0;
+#signup-form .btn-primary,
+#login-form .btn-primary {
+    margin-top: 1.5rem;
+    /* Increased space above the button */
+    padding: 1rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
 
-    color: #1a1a1a;
+.login-footer {
+    margin-top: 2.5rem;
+    /* Increased space above the footer */
+}
 
-    box-shadow: none;
+.login-footer p {
+    color: #a9a9b3;
+}
+
+.login-footer a {
+    color: #c5a8ff;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.login-footer a:hover {
+    text-decoration: underline;
 }
 
 .login-container .btn-primary:hover {
@@ -147,6 +166,19 @@ body {
 
 .login-footer {
     margin-top: 20px;
+}
+
+#signup-form,
+#login-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.75rem;
+    /* THIS IS THE KEY: Increased vertical space between input groups */
+}
+
+/* Container for each label + input */
+.input-group {
+    text-align: left;
 }
 
 .login-footer a {
@@ -172,7 +204,7 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 15px 40px;
+    padding: 1rem 2rem;
     background-color: rgba(13, 9, 21, 0.8);
     backdrop-filter: blur(10px);
     border-bottom: 1px solid var(--border-color);
@@ -184,11 +216,23 @@ body {
 .nav-left {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 0.75rem;
 }
 
 .nav-logo {
-    width: 30px;
+    width: 32px;
+    /* Set an explicit, larger width */
+    height: 32px;
+    /* Set an explicit, larger height */
+    object-fit: contain;
+    /* Ensures the image scales correctly without being squished */
+}
+
+/* Optional: Style for the navbar title */
+.nav-left h2 {
+    font-size: 1.5rem;
+    margin: 0;
+    color: #fff;
 }
 
 .nav-right {
@@ -243,7 +287,7 @@ body {
 
 .dropdown-menu {
     position: fixed;
-
+    background: rgba(28, 28, 46, 0.85);
     top: 70px;
     right: 30px;
     width: 250px;
@@ -347,21 +391,43 @@ input:checked+.slider:before {
 }
 
 #notification-list {
-    max-height: 300px;
     overflow-y: auto;
+    /* Enable vertical scrolling when content exceeds height */
+    flex-grow: 1;
+    padding: 0;
+    /* Remove padding for edge-to-edge items */
+}
+
+#notification-panel .dropdown-header,
+#notification-panel #notification-footer {
+    flex-shrink: 0;
+    /* Prevent header/footer from shrinking */
 }
 
 .notification-item {
-    padding: 12px 15px;
-    font-size: 14px;
     display: flex;
-    gap: 12px;
-    align-items: start;
-    border-bottom: 1px solid var(--border-color);
+    gap: 1rem;
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    position: relative;
+    transition: background-color 0.2s ease;
 }
 
 .notification-item:last-child {
     border-bottom: none;
+}
+
+.notification-item.unread {
+    background-color: rgba(177, 137, 255, 0.1);
+}
+
+.notification-item:not(.unread) {
+    opacity: 0.7;
+}
+
+.notification-item:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+    opacity: 1;
 }
 
 .notification-item i {
@@ -376,10 +442,48 @@ input:checked+.slider:before {
     margin-bottom: 4px;
 }
 
+.notification-icon {
+    margin-top: 2px;
+    color: #c5a8ff;
+}
+
 .notification-text small {
     color: var(--text-secondary);
 }
 
+.notification-content .title {
+    font-weight: 600;
+    color: #fff;
+    display: block;
+    margin-bottom: 0.25rem;
+}
+
+.notification-content .body {
+    font-size: 0.9rem;
+    color: #a9a9b3;
+    line-height: 1.5;
+    margin: 0 0 0.5rem 0;
+    /* Reset paragraph margin */
+}
+
+.notification-content .time {
+    font-size: 0.75rem;
+    color: #777;
+}
+
+.notification-item-actions {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    display: flex;
+    gap: 0.25rem;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.notification-item:hover .notification-item-actions {
+    opacity: 1;
+}
 
 .container {
     max-width: 900px;
@@ -443,6 +547,44 @@ input:checked+.slider:before {
     margin-bottom: 15px;
 }
 
+/* --- New Styles for Empty Notification Panel --- */
+
+.empty-notification-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 3rem 1rem;
+    color: #a9a9b3;
+    height: 100%;
+    /* Fill the available space */
+}
+
+.empty-notification-state svg {
+    width: 48px;
+    height: 48px;
+    color: #2ecc71;
+    /* A nice success green */
+    margin-bottom: 1rem;
+}
+
+.empty-notification-state h4 {
+    font-size: 1.1rem;
+    color: #fff;
+    margin: 0 0 0.5rem 0;
+}
+
+.empty-notification-state p {
+    margin: 0;
+    font-size: 0.9rem;
+}
+
+/* Ensure the footer has a default display style */
+#notification-footer {
+    display: block;
+    /* Or flex if you prefer */
+}
 
 #fetch-messages-btn {
     background-color: var(--primary-purple);
@@ -1676,7 +1818,29 @@ input:checked+.slider:before {
 
 /* Make the dropdown wider for notifications */
 #notification-panel {
-    width: 350px;
+    width: 380px;
+    /* A slightly wider panel */
+
+    /* --- THIS IS THE FIX --- */
+    max-height: 500px;
+    /* Set a maximum height for the entire panel */
+    display: flex;
+    /* Use flexbox to manage internal layout */
+    flex-direction: column;
+
+    /* Keep your existing positioning and visual styles */
+    position: absolute;
+    top: calc(100% + 15px);
+    right: 0;
+    z-index: 1000;
+    background: #1c1c2e;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(10px);
+    transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s;
 }
 
 /* Header with actions */
@@ -1693,6 +1857,12 @@ input:checked+.slider:before {
     border-bottom: 1px solid var(--border-color);
     transition: background-color 0.2s;
     cursor: pointer;
+}
+
+#notification-panel.active {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
 }
 
 .notification-item:last-child {
@@ -2252,4 +2422,145 @@ input.score-input {
     background-color: rgba(0, 0, 0, 0.1);
     border-radius: 6px;
     padding: 0.75rem;
+}
+
+/* --- Styles for Dropdown Menu Items --- */
+
+.dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    color: #a9a9b3;
+    /* Softer text color */
+    font-size: 0.9rem;
+    text-decoration: none;
+    border-radius: 6px;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.dropdown-item:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: #fff;
+}
+
+.dropdown-item svg {
+    width: 16px;
+    height: 16px;
+    stroke-width: 2;
+}
+
+/* For the toggle item */
+.toggle-item {
+    justify-content: space-between;
+}
+
+.toggle-item span {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+/* Divider line */
+.dropdown-divider {
+    height: 1px;
+    background-color: rgba(255, 255, 255, 0.1);
+    margin: 0.5rem 0;
+}
+
+/* Specific styling for the logout button */
+#logout-btn {
+    color: #e74c3c;
+    /* Red for destructive action */
+}
+
+#logout-btn:hover {
+    background-color: rgba(231, 76, 60, 0.2);
+    color: #fff;
+}
+
+/* --- UI Fix for the "Turn Off Agent" Button --- */
+
+#stop-agent-btn {
+    /* Resetting default styles */
+    border: none;
+    font-family: inherit;
+    /* Use the app's font */
+
+    /* New Custom Design */
+    background-color: rgba(231, 76, 60, 0.15);
+    /* Subtle, dark red background */
+    color: #ff8a80;
+    /* A softer, less harsh red for the text */
+    border: 1px solid rgba(231, 76, 60, 0.5);
+    /* Defines the shape */
+    border-radius: 100px;
+    /* Fully rounded pill shape */
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+
+    /* Icon and text alignment */
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+
+    /* Smooth transition for the hover effect */
+    transition: background-color 0.3s ease, box-shadow 0.3s ease, color 0.3s ease;
+}
+
+/* Hover State - Add a glow and brighten the text */
+#stop-agent-btn:hover {
+    background-color: rgba(231, 76, 60, 0.3);
+    color: #fff;
+    /* White text on hover for contrast */
+    box-shadow: 0 0 15px rgba(231, 76, 60, 0.4);
+    /* The red glow effect */
+}
+
+/* Active State - A subtle "press down" effect */
+#stop-agent-btn:active {
+    background-color: rgba(231, 76, 60, 0.4);
+    transform: scale(0.98);
+}
+
+/* --- App Footer Style --- */
+
+#app-footer {
+    position: fixed;
+    /* Fixes it to the viewport */
+    bottom: 0;
+    /* Aligns it to the bottom */
+    left: 0;
+    /* Aligns it to the left */
+    width: 100%;
+    /* Makes it span the full width */
+
+    padding: 1rem;
+    text-align: center;
+
+    /* Subtle styling */
+    color: #6a6a82;
+    /* A muted text color */
+    font-size: 0.85rem;
+    z-index: 10;
+    /* Ensures it's above the background but below modals */
+}
+
+#app-footer p {
+    margin: 0;
+}
+
+#app-footer a {
+    color: #8c8ca8;
+    /* A slightly brighter color for the link */
+    font-weight: 600;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+#app-footer a:hover {
+    color: #c5a8ff;
+    /* Your primary accent color on hover */
 }
