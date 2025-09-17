@@ -72,15 +72,36 @@ body {
     padding: 20px;
 }
 
-
+/* --- REPLACE WITH THIS BLOCK --- */
 .login-container {
     max-width: 550px;
-    width: 100%;
-    padding: 5rem;
+    width: 90%;
+    /* Use 90% to prevent touching screen edges on mobile */
+    margin: 0 auto;
+    /* Center the container */
+    padding: 2.5rem 1.5rem;
+    /* Sensible padding for mobile */
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 15px;
+}
+
+/* Increase padding ONLY on larger screens (tablets and up) */
+@media (min-width: 768px) {
+    .login-container {
+        width: 100%;
+        /* Let max-width take over */
+        padding: 4rem;
+        /* Restore larger padding for tablets */
+    }
+}
+
+/* Restore the original large padding for desktops */
+@media (min-width: 992px) {
+    .login-container {
+        padding: 5rem;
+    }
 }
 
 .login-container .logo {
@@ -193,12 +214,25 @@ body {
 }
 
 
+/* --- REPLACE WITH THIS BLOCK --- */
 .input-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
+    /* Default to a single column for mobile */
+    grid-template-columns: 1fr;
+    gap: 1.75rem;
+    /* Match the vertical gap of the other inputs */
+    width: 100%;
+    /* Ensure the grid takes full width */
 }
 
+/* Use two columns ONLY on larger screens */
+@media (min-width: 576px) {
+    .input-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+        /* Restore the horizontal gap */
+    }
+}
 
 .navbar {
     display: flex;
@@ -2563,4 +2597,174 @@ input.score-input {
 #app-footer a:hover {
     color: #c5a8ff;
     /* Your primary accent color on hover */
+}
+
+/* ============================================== */
+/* --- Responsive Fixes for Login/Signup --- */
+/* ============================================== */
+
+/* For tablets and smaller screens (e.g., up to 768px wide) */
+@media (max-width: 768px) {
+    .login-container {
+        /* Reduce the excessive padding for medium screens */
+        padding: 3rem;
+    }
+
+    .login-container h1 {
+        font-size: 2em;
+        /* Slightly smaller heading */
+    }
+}
+
+/* For mobile devices (e.g., up to 576px wide) */
+@media (max-width: 576px) {
+
+    /* --- CRITICAL FIX FOR ONBOARDING WRAPPERS --- */
+    /* This removes the fixed position on mobile so the user can scroll 
+       if the content is taller than the screen (e.g., on the connect page) */
+    #intro-wrapper,
+    #signup-wrapper,
+    #login-wrapper,
+    #telegram-connect-wrapper,
+    #platform-choice-wrapper,
+    #pin-code-wrapper {
+        position: static;
+        /* Change from fixed to static */
+        min-height: 100vh;
+        /* Ensure it still takes up the full screen height */
+        padding: 20px 0;
+        /* Add some vertical padding */
+    }
+
+    .login-container {
+        /* Further reduce padding for small screens */
+        padding: 2rem 1.5rem;
+        width: 90%;
+        /* Ensure it doesn't touch the screen edges */
+        max-width: 100%;
+        /* Override the 550px max-width on mobile */
+    }
+
+    .login-container h1 {
+        font-size: 1.8em;
+        /* Even smaller heading for mobile */
+    }
+
+    .login-container p {
+        font-size: 0.95em;
+        /* Adjust paragraph text */
+    }
+
+    /* --- SIGNUP FORM GRID FIX --- */
+    /* This stacks the "First Name" and "Last Name" inputs on top of each other */
+    #signup-form .input-grid {
+        grid-template-columns: 1fr;
+        /* Change from two columns to one */
+        gap: 1.75rem;
+        /* Match the main form gap */
+    }
+}
+
+/* ============================================== */
+/* --- Clickable Navbar Brand --- */
+/* ============================================== */
+
+#navbar-brand {
+    text-decoration: none;
+    /* Removes the default underline from the link */
+    color: inherit;
+    /* Makes the h2 inside keep its original color */
+    cursor: pointer;
+    /* Shows a pointer hand on hover */
+    transition: opacity 0.2s ease;
+}
+
+#navbar-brand:hover {
+    opacity: 0.85;
+    /* Adds a subtle fade effect on hover for feedback */
+}
+
+/* Target the specific modal content container */
+/* =================================================== */
+/* --- Polished PIN Verification Modal UI (FIXED) --- */
+/* =================================================== */
+
+/* --- Increase the max-width of the modal --- */
+/* This is the key fix to prevent the input from being cut off. */
+#pin-modal-content {
+    max-width: 500px;
+    /* Increased from 420px */
+    width: 90%;
+}
+
+/* Style the input field to match the new design */
+#modal-pin-form input[name="telegram_pin_code"] {
+    font-size: 1.8em;
+    font-weight: 600;
+    letter-spacing: 0.7em;
+    /* Fine-tuned spacing */
+    padding: 18px 10px 18px 28px;
+    /* Adjusted padding to better center the spaced text */
+    background-color: #0d0915;
+    border: 1px solid var(--border-color);
+    width: 100%;
+    /* Ensure it uses the full width of the form */
+    box-sizing: border-box;
+    /* Important for consistent padding/border behavior */
+}
+
+#modal-pin-form input[name="telegram_pin_code"]:focus {
+    border-color: var(--primary-purple);
+    box-shadow: 0 0 15px var(--glow-purple);
+}
+
+/* Re-style the button container */
+#pin-modal-content .modal-buttons {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    margin-top: 2.5rem;
+}
+
+/* Make the Cancel button look like a text link */
+#modal-cancel-btn {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 10px;
+    transition: color 0.2s ease;
+}
+
+#modal-cancel-btn:hover {
+    color: var(--text-primary);
+}
+
+/* Style the Verify button with a solid color as per the new image */
+#modal-verify-btn {
+    background-color: var(--primary-purple);
+    /* Use the solid theme color */
+    border: none;
+    color: white;
+    font-size: 1rem;
+    font-weight: 600;
+    padding: 14px 30px;
+    /* Slightly more padding for a bolder look */
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+#modal-verify-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px var(--glow-purple);
+}
+
+/* Ensure the default .btn class doesn't interfere */
+.modal-buttons .btn {
+    flex-grow: 0;
 }
